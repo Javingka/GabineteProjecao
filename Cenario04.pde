@@ -47,6 +47,18 @@ class Cenario04 extends Cenario {
     f = new PFrame();
     temControl = true;
   }
+ 
+  void ejecutaModificacoes () { //implementação de classe declarada na classe pai 'Cenario' | E chamada desde Modelo3D cada vez que tem novos dados
+     //Modificações com o dado A
+     
+     //Modificações com o dado B
+     speed = aplicaModificacoesNoVal( valModificadoraB, 0, 100);
+     neighborhood = aplicaModificacoesNoVal( valModificadoraA, 1, 640);
+     independence = aplicaModificacoesNoVal( valModificadoraA, 0.0, 1.0);
+     //Modificações com o dado C
+     spread = aplicaModificacoesNoVal( valModificadoraC, 200, 50);
+     viscosity = aplicaModificacoesNoVal( valModificadoraC, 0.0, 1.0);
+  }
   public void setPosicaoCamara(PVector pos) {
     camPosition[0] = pos.x;
     camPosition[1] = pos.y;
@@ -54,7 +66,7 @@ class Cenario04 extends Cenario {
   }
   void drawCenario() {
 //    p5.pushStyle();
-    if ( temControl && s.temEvento() ) {
+ /*      if ( temControl && s.temEvento() ) {
       n = s.getN();
       dofRatio = s.getDofRatio();
       neighborhood = s.getNeighborhood();
@@ -68,8 +80,8 @@ class Cenario04 extends Cenario {
       cameraRate = s.getCameraRate();
       averageRebirth = s.getAverageRebirth();
       paused = s.getPaused();
-    }  
-    
+    }  */ 
+   
     avg = new Vec3D();
     for (int i = 0; i < particles.size (); i++) {
       Particle cur = ((Particle) particles.get(i));
@@ -82,7 +94,7 @@ class Cenario04 extends Cenario {
     cameraCenter.addSelf(avg.scale(cameraRate));
 
     p5.translate(-cameraCenter.x, -cameraCenter.y, -cameraCenter.z);
-    float tempPosX = map (mouseX, 0, width, -width*2, width*2);
+    float tempPosX = map (valModificadoraA, 0, 1, -width*3, 0);
     p5.translate(tempPosX, 0, 0);  
     //  float[] camPosition = cam.getPosition();
     //  println("camPosition: " + camPosition[0] + " " +  camPosition[1] + " " + camPosition[2]);
@@ -112,6 +124,8 @@ class Cenario04 extends Cenario {
     turbulence / neighborhood);
 //    p5.popStyle();
   }
+ 
+  
   Particle randomParticle() {
     return ((Particle) particles.get((int) random(particles.size())));
   }
@@ -129,7 +143,6 @@ class Cenario04 extends Cenario {
     rebirthRadius = 250;
     turbulence = 1.3;
     cameraRate = .1;
-    averageRebirth = false;
     averageRebirth = false;
   }
   void mudaNumero( float numIn) {
@@ -186,23 +199,23 @@ class Cenario04 extends Cenario {
       float distanceToFocalPlane = focalPlane.getDistanceToPoint(position);
       distanceToFocalPlane *= 1 / dofRatio;
       distanceToFocalPlane = constrain(distanceToFocalPlane, 1, 15);
-      strokeWeight(distanceToFocalPlane);
-      stroke(255, constrain(255 / (distanceToFocalPlane * distanceToFocalPlane), 1, 255));
-      point(position.x, position.y, position.z);
+      p5.strokeWeight(distanceToFocalPlane);
+      p5.stroke(255, constrain(255 / (distanceToFocalPlane * distanceToFocalPlane), 1, 255));
+      p5.point(position.x, position.y, position.z);
     }
     void applyFlockingForce() {
       force.addSelf(
-      noise(
+      p5.noise(
       position.x / neighborhood + globalOffset.x + localOffset.x * independence, 
       position.y / neighborhood, 
       position.z / neighborhood)
         - .5, 
-      noise(
+      p5.noise(
       position.x / neighborhood, 
       position.y / neighborhood + globalOffset.y  + localOffset.y * independence, 
       position.z / neighborhood)
         - .5, 
-      noise(
+      p5.noise(
       position.x / neighborhood, 
       position.y / neighborhood, 
       position.z / neighborhood + globalOffset.z + localOffset.z * independence)
@@ -261,10 +274,7 @@ class Cenario04 extends Cenario {
     }
 
     public void draw() {
-      background(0);
 
-      pushMatrix();
-      popMatrix();
     }
     boolean temEvento() {
       if (event) {
