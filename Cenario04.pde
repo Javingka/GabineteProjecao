@@ -54,7 +54,7 @@ class Cenario04 extends Cenario {
      //Modificações com o dado B
      speed = aplicaModificacoesNoVal( valModificadoraB, 0, 100);
      neighborhood = aplicaModificacoesNoVal( valModificadoraA, 1, 640);
-     independence = aplicaModificacoesNoVal( valModificadoraA, 0.0, 1.0);
+//     independence = aplicaModificacoesNoVal( valModificadoraA, 0.0, 1.0);
      //Modificações com o dado C
      spread = aplicaModificacoesNoVal( valModificadoraC, 200, 50);
      viscosity = aplicaModificacoesNoVal( valModificadoraC, 0.0, 1.0);

@@ -1,13 +1,17 @@
 class Modelo3D {
  
 //VARIAVEIS DE DEFINIÇĀO DA ESPERA
-  PVector angulosPosicaoPuntero;
+  PVector angulosPosicaoPuntero1; //a posição anterior do puntero, permite se desplazar de uma posição para outra 
+  PVector angulosPosicaoPuntero; //a posição atual do puntero, que vai mudando em cada cenário, as câmaras olhan nesse ponto 
   PVector angulosFinalPuntero; //PVector que pega o angulo final do puntero, o angulosPosicaoPuntero vai ir do angulo previo ao final
   
   int radEsfera; //radio da esfera
   PApplet p5; //Objeto tipo PApplet que vai se preencher com a classe inicial de Processing
   
 //CLASSES DE CENARIOS
+  private boolean apagaCenarioProgramado; //indica que tem um apagado programado
+  private int tempoBase, tempoApaga ; //variaveis para calcular o tempo programado
+  private String nomeApaga; //nome do cenário que vai se programar para ser apagado
   ArrayList <Cenario> cenarios;
   ArrayList <String> listaCenariosLigados;
 /** Variaves que definen a posiçāo do globo
@@ -23,7 +27,7 @@ class Modelo3D {
   PVector posFocoCamara;
   float distanciaFoco;
   String nomePai; //string para conhecer de qual projecáo é o objeto
- 
+  
   Modelo3D (PApplet _p5, String nomePai) {
     p5 = _p5; 
     
@@ -34,10 +38,10 @@ class Modelo3D {
     cenarios.add( new Cenario01(p5, PI*.25, 0 , PI*.5, radEsfera, "Revoada") );
     cenarios.add( new Cenario02(p5, 0,  PI*1.5, PI*.5, radEsfera,  "Atraccao" ) );
     cenarios.add( new Cenario03(p5, PI*.25, 0,  0 , radEsfera, "Ser01") );
-    if (nomePai.equals("PApp1"))  cenarios.add( new Cenario04(p5, PI*1.98, PI*1.5,  PI*.5, radEsfera, "Nuvem", "WithControls") ); //so o papplet1 tem controles p5
-    else cenarios.add( new Cenario04(p5,  PI*1.98, PI*1.5,  PI*.5, radEsfera, "Nuvem") );
+    if (nomePai.equals("PApp1"))  cenarios.add( new Cenario04(p5,  0, 0,  PI*.5, radEsfera, "Nuvem", "WithControls") ); //so o papplet1 tem controles p5
+    else cenarios.add( new Cenario04(p5,  0, 0,  PI*.5, radEsfera, "Nuvem") );
     cenarios.add( new Cenario05(p5, 0, 0,  0 , radEsfera, "Rodape_0") );
-    cenarios.add( new Cenario06(p5, 0, 0, 0, radEsfera, "Rodape_1"));
+    cenarios.add( new Cenario06(p5, 0, 0, PI * 1.1, radEsfera, "Rodape_1"));
     
     desloqueX = desloqueY = desloqueZ = 0; //A posiçāo inicial.
     
@@ -52,8 +56,10 @@ class Modelo3D {
     rotacaoDeCamara = new PVector(0,0,0);
 //    posFocoCamara = new PVector(0,0,0);
     angulosPosicaoPuntero = new PVector(0, 0, 0);
-    angulosFinalPuntero = angulosPosicaoPuntero;
+    angulosPosicaoPuntero1 = new PVector(0, 0, 0); //Nossa posição por default é x=0,y=0,z=0
+//    angulosFinalPuntero = angulosPosicaoPuntero;
     distanciaFoco = width; //O valro que representa o rango de distanca posivel
+    apagaCenarioProgramado = false; //no começo nunca vai ter programado apagar algum cenário
     println("nova classe Modelo3D");
   }
   public void setPosRefCamara(PVector pos) {
@@ -63,25 +69,30 @@ class Modelo3D {
     ((Cenario04)cenarios.get(3)).aplicaMudanca(); //cenario nuvem
     ((Cenario01)cenarios.get(0)).cambiaTarget(); //cenario revoada
   }
-  
+  /*
   public void setDesloques(float dx, float dy, float dz) {
     //Os valores vem desde a classe principal, floats entre 0 e 1.
    desloqueX = dx;
    desloqueY = dy;
    desloqueZ = dz;
    
-   angulosFinalPuntero.x = angulosPosicaoPuntero.x + desloqueX; // O novo angulo de inclinaçāo do puntero é 90% angulo anterior e 10% ang novo
-   angulosFinalPuntero.y = angulosPosicaoPuntero.y + desloqueY; // O novo angulo de inclinaçāo do puntero é 90% angulo anterior e 10% ang novo
-   angulosFinalPuntero.z = angulosPosicaoPuntero.z + desloqueZ;
-  }
+   angulosPosicaoPuntero0.x = angulosPosicaoPuntero.x + desloqueX; // O novo angulo de inclinaçāo do puntero é 90% angulo anterior e 10% ang novo
+   angulosPosicaoPuntero0.y = angulosPosicaoPuntero.y + desloqueY; // O novo angulo de inclinaçāo do puntero é 90% angulo anterior e 10% ang novo
+   angulosPosicaoPuntero0.z = angulosPosicaoPuntero.z + desloqueZ;
+  }*/
 
   // ----------------------------------------------------------
   // DESENHO DO MODELO DA ESFERA
   // ----------------------------------------------------------  
   
   public void desenhaModelo() {
-//    angulosPosicaoPuntero.lerp(angulosFinalPuntero, .1);
+//    print("angulosPosicaoPuntero: " + angulosPosicaoPuntero);
+    int tempoRolando = frameCount - tempoBase;
+    float lerpVal = .1 * ( constrain (map (tempoRolando, 0, tempoApaga, 0, 1), 0,1) );
+    lerpVal = abs(lerpVal); //por segurança boto valor absoluto, não tenho certeza se vai ser + ou -
+    angulosPosicaoPuntero.lerp(angulosPosicaoPuntero1, lerpVal);
     
+//    println("  :  " + angulosPosicaoPuntero);
     settingCamera();
 //    p5.pushMatrix();
     
@@ -103,16 +114,26 @@ class Modelo3D {
     p5.sphereDetail(80);
     p5.sphere(radEsfera); //desenha esfera 
 */   
+
+//EVALUA APAGOS PROGRAMADOS  
+    if ( apagaCenarioProgramado ){
+      if ( tempoRolando > tempoApaga) {
+        desligaCenario(nomeApaga);
+        apagaCenarioProgramado = false; 
+      }
+    }
 //DESENHO CENARIOS    
     for ( Cenario c : cenarios ){ //bucle por cada um dos cenarios declarados
       String n = c.getNameCenario(); //pegamos o nome de cada cenário a evaluar
       if (listaCenariosLigados.contains(n)) { //evaluamos se o cenário esta na lista de cenários ligados
 				//Filtro para agregar deslocamentos na posicao dos cenários 
         if (n.equals("Nuvem")) { //se esta na lista, evaluamos se o cenário é o "Nuvem", nesse caso é ligado com o seguinte método
-          ligaCenario( c , new PVector (0, PI*.01f, 0) ); //se desenha o cenario com um offset pra fazer-lho visivel
+          ligaCenario( c , new PVector (0, PI*.02f, 0) ); //se desenha o cenario com um offset pra fazer-lho visivel
 	} else if (n.equals("Rodape_1")) {
           ligaCenario( c , new PVector (PI*.03,0 , 0));//-PI*.03
-	} else { //Se náo liga sem deslocamentos os cenários 
+	} else if (n.equals("Ser01")) {
+          ligaCenario( c , new PVector (PI*.01, 0 , 0));//
+        } else { //Se náo liga sem deslocamentos os cenários 
           ligaCenario( c );  
         }
       }
@@ -193,9 +214,9 @@ class Modelo3D {
     distanciaFoco = 20000 * _dist;
   }
  
-  public void setAng_X_Puntero(float _ang) {    angulosPosicaoPuntero.x = _ang;  }
-  public void setAng_Y_Puntero(float _ang){     angulosPosicaoPuntero.y = _ang;  }
-  public void setAng_Z_Puntero(float _ang){     angulosPosicaoPuntero.z = _ang;  }
+  public void setAng_X_Puntero(float _ang) {    angulosPosicaoPuntero1.x = _ang;  } // angulosPosicaoPuntero.x = _ang;  }
+  public void setAng_Y_Puntero(float _ang){     angulosPosicaoPuntero1.y = _ang;  } //angulosPosicaoPuntero.y = _ang;  }
+  public void setAng_Z_Puntero(float _ang){     angulosPosicaoPuntero1.z = _ang;  } //angulosPosicaoPuntero.z = _ang;  }
   public void setAng_X_Camara(float _ang) {    rotacaoDeCamara.x = _ang;  }
   public void setAng_Y_Camara(float _ang){     rotacaoDeCamara.y = _ang;  }
   public void setAng_Z_Camara(float _ang){     rotacaoDeCamara.z = _ang;  }
@@ -241,6 +262,15 @@ class Modelo3D {
 				 setPosRefCamara(new PVector (0, .3, -1) ); //novo Vector de referencia para mudar o angulo anchor da camara
        }
        println("novo cenário ligado: "+ nomeC);
+       
+        //Muda a variavel 'ligado' para true
+      for ( Cenario c : cenarios ){
+        String n = c.getNameCenario();
+        if ( n.equals(nomeC) ) {
+          c.cenarioTurnOn();
+        }
+      }
+      
     } 
   }
   /** O nome do cenario a desligar */
@@ -248,7 +278,22 @@ class Modelo3D {
     if ( listaCenariosLigados.contains(nomeC) ) {
        listaCenariosLigados.remove(nomeC);
        println("cenário desligado: "+ nomeC);
+       
+     //Muda a variavel 'ligado' para false
+      for ( Cenario c : cenarios ){
+        String n = c.getNameCenario();
+        if ( n.equals(nomeC) ) {
+          c.cenarioTurnOff();
+        }
+      }
     } 
+  }
+  /** O nome do cenario a desligar e o tempo antes de se apagar*/
+  public void desligaCenario(String nomeC, int tempoOff) {
+    apagaCenarioProgramado = true;
+    tempoBase = frameCount;
+    tempoApaga = tempoOff;
+    nomeApaga = nomeC;
   }
   /** Novos dados para posiçao do puntero que define o punto a visualizar do modelo */
   public void novaPosicaoPuntero(PVector angulosPos){

@@ -28,7 +28,7 @@ class Cenario01 extends Cenario {
 
     // p5.pushMatrix();
     p5.translate(posIni.x + posicaoVariavel , posIni.y , posIni.z);
-println("posicaoVariavel: " + posicaoVariavel );
+// println("posicaoVariavel: " + posicaoVariavel );
     //  p5.pointLight(200, 200, 200, 0, 0, 0); LUZ
     //  float var = sin (frameRate * .01);
     //  p5.fill(255,255,0); p5.noStroke();
@@ -38,7 +38,7 @@ println("posicaoVariavel: " + posicaoVariavel );
     // run
     for (int i=0; i<particleCollection.size (); i++) {
       Cenario01_Passaro myParticle = (Cenario01_Passaro) particleCollection.get(i);
-      myParticle.run(valModificadoraC);
+      myParticle.run(valModificadoraB);
     }
 
     //  p5.popMatrix();
@@ -56,7 +56,7 @@ println("posicaoVariavel: " + posicaoVariavel );
     posicaoVariavel  = aplicaModificacoesNoVal( valModificadoraA, -width, width);
     
     //Modificações com o dado B
-    if ( valModificadoraB < .01) {
+    if ( valModificadoraC < .01) {
       cambiaTarget();
     }
       

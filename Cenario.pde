@@ -6,6 +6,8 @@ class Cenario {
   public String nome;
   public float [] varFromKinect;
   public float valModificadoraA, valModificadoraB, valModificadoraC;
+  public boolean ligado;
+  public int tempoDeInicio;
   
   public Cenario(float angX, float angY, float angZ, int _radEsfera, String _nome){ 
     anguloPos_X = angX;
@@ -19,6 +21,8 @@ class Cenario {
 //CALCULO DA POSIÇĀO DO CENARIO EM RELAÇĀO COM O VETOR DO EIXO 'Y' NO CENTRO DA ESFERA 
     posGlobal = calculaPosCartesiana( originalRef, anguloPos_X, anguloPos_Y, anguloPos_Z );
     valModificadoraA = valModificadoraB = valModificadoraC = .5;
+    ligado = false;
+
   }   
   
   public PVector calculaPosCartesiana( PVector original , float ax, float ay, float az){
@@ -89,6 +93,9 @@ class Cenario {
   }
   public void drawCenario(){}
   public void ejecutaModificacoes(){}
+  /** valMod - valor normalizado da variabel de entrada. limA - O limite menor posible da variabel que vai pegar esse dado, limB - valor maior
+    * return - o valor mapeado segundo os dados recebedos
+    */
   public int aplicaModificacoesNoVal( float valMod, int limA, int limB) {
     int val = (int) constrain ( map( valMod, 0, 1, limA, limB), limA, limB);
     return val;
@@ -97,4 +104,22 @@ class Cenario {
     float val =  constrain ( map( valMod, 0, 1, limA, limB), limA, limB);
     return val;
   }
+    public void cenarioTurnOn(){
+    ligado = true;
+    tempoDeInicio = millis();
+  }
+  public void cenarioTurnOff(){
+    ligado = false;
+  }
+  public int getTempoLigado() {
+    int t = 0;
+    if (ligado) {
+     t = millis() - tempoDeInicio;
+     return t; 
+   } else {
+     return t;
+   }
+   
+  }
+  
 }

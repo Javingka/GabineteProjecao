@@ -18,7 +18,10 @@ class Cenario03_Ser01 {
   float helixOffset;
   boolean rotateMouse;
   PVector valoresRotacion;
-
+  float xoff,yoff,zoff; //utilizadas no noise3D
+  float incremento = .03; // incremento para as variaveis xoff,yoff,zoff
+  float amortecimentoMovimento; //vai variar quanto se move o ser. 
+  
  Cenario03_Ser01(PApplet _p5, PVector _posicao, int _id){
    p5 = _p5;
    posicao = _posicao;
@@ -36,16 +39,17 @@ class Cenario03_Ser01 {
   helixOffset = 5.0;
   rotateMouse = false;
   valoresRotacion = new PVector(0,0,0);
+  SetNovosValores();
  } 
  
  public void SetNovosValores() {
   isWireFrame = true;
   isHelix = true;
   rotateMouse = false;
-  pts =  40;
-  segments = 60;
-  latheRadius = 100.0;
-  radius = 40.0;
+  pts =  12;
+  segments = 12;
+  latheRadius = 8.0;
+  radius = 5.0;
  }
  public void UpdateValores() {
   isWireFrame = true;
@@ -65,12 +69,21 @@ class Cenario03_Ser01 {
   latheRadius =  10.0;//5; //100.0;
   radius = 350.0;// * noise ((id*50)) ; //+ ( 20.0 * cos (millis() * .001) ) ;//10.0;//40.0;
  }
- 
+ public void updateValores(int v1, float v2, float v3) {
+  isWireFrame = true;
+  isHelix = true;
+  rotateMouse = true;
+  pts = v1;
+  segments = 40;//v1;
+  latheRadius = v3-20.0;//5; //100.0;
+  radius = v3;// * noise ((id*50)) ; //+ ( 20.0 * cos (millis() * .001) ) ;//10.0;//40.0;
+  amortecimentoMovimento = v2;
+ }
  public void desenhaSer() {
    p5.pushStyle(); 
    p5.pushMatrix();
    p5.translate(posicao.x, posicao.y, posicao.z);
-   UpdateValores01();
+//   UpdateValores01();
    
    if (isWireFrame){
      p5.stroke(255);
@@ -83,8 +96,8 @@ class Cenario03_Ser01 {
    
    rotacionDeSer();
    
-   UpdateValores();
-   manifestacaoSer02();
+//   UpdateValores();
+   manifestacaoSer03();
 // UpdateValores01
 // manifestacaoSer01();
 
@@ -95,11 +108,11 @@ class Cenario03_Ser01 {
   public void rotacionDeSer(){
    //rotaçāo para visualizaçāo
   if (rotateMouse) {
-    if (mousePressed) {
-    valoresRotacion.x = ( map(mouseX, 0, width, 0, TWO_PI) );
-    valoresRotacion.y = ( map(mouseY, 0, height, 0, TWO_PI) );
+//    if (mousePressed) {
+    valoresRotacion.x = 0 ;//( map(mouseX, 0, width, 0, TWO_PI) );
+    valoresRotacion.y = ( map(amortecimentoMovimento, 0, 1, PI*1.3, PI*.6) );
     valoresRotacion.z = 0 ;  
-    }
+ //   }
     
   } else {
     valoresRotacion.x = (frameCount*PI/150);
@@ -186,6 +199,72 @@ public void manifestacaoSer02(){
   
   float v = radius/segments;
   for(int i=0; i<=segments; i++){
+    float val =  v*i;//cos( i + millis() * .001) ;
+    for(int j=0; j<=pts; j++){
+      vertices[j].x = latheRadius + sin(radians(angle))* (radius * val) ;
+      if (isHelix){
+        vertices[j].z = cos(radians(angle))*(radius * val)-(helixOffset * segments)/2;
+      } else {
+        vertices[j].z = cos(radians(angle))*(radius * val);
+      }
+      angle+=360.0/pts;
+    }
+    p5.beginShape(QUAD_STRIP);
+    p5.stroke(255);// (255 - (colorV*i % 255) ) * cos(i+millis()*.01) );
+    for(int j=0; j<=pts; j++){
+      //os vertices centrais
+      if (i>0){ //tiene el valor de la vuelta anterior
+        p5.vertex(vertices2[j].x , vertices2[j].y , vertices2[j].z );
+      }
+      
+      vertices2[j].x = cos(radians(latheAngle))* vertices[j].x ;
+      vertices2[j].y = sin(radians(latheAngle))* vertices[j].x ;
+      vertices2[j].z = vertices[j].z;
+      // optional helix offset
+      if (isHelix){
+        vertices[j].z+=helixOffset;
+      }
+    p5.vertex(vertices2[j].x, vertices2[j].y, vertices2[j].z);
+   }
+    // create extra rotation for helix
+    if (isHelix){
+    latheAngle+=720.0/segments;
+    } else {
+    latheAngle+=360.0/segments;
+    }
+    p5.endShape();
+  }  
+}
+public void manifestacaoSer03(){
+  vertices = new Point3D[pts+1];
+  vertices2 = new Point3D[pts+1];
+  latheAngle = 0;
+  for(int j=0; j<=pts; j++){ //loop por cada ponto para dar a forma
+    vertices[j] = new Point3D();
+    vertices2[j] = new Point3D();
+    float val =  1;// cos(millis() * .001) ;
+    vertices[j].x = latheRadius + sin(radians(angle))* (radius * val) ;
+    if (isHelix){
+      vertices[j].z = cos(radians(angle))*(radius * val)-(helixOffset * segments)/2;
+    } else {
+      vertices[j].z = cos(radians(angle))*(radius * val);
+    }
+    angle+=360.0/pts;
+  }
+  zoff += (incremento * amortecimentoMovimento);
+  yoff += incremento;
+  xoff += incremento;
+  float v = radius/segments;
+  for(int i=0; i<=segments; i++){
+    
+//    float bright = noise(xoff,yoff,zoff)*255;
+    if ( i % (segments/10) == 0 ) {
+        float nz = ( noise(zoff+i) * TWO_PI ) ;
+        p5.rotateZ( nz ); //a quantiade de giro varia sengo a variavel seteada desde update. segundo fruidor
+//        float nx = ( noise(xoff+i) * TWO_PI ) ;
+//        p5.rotateX( nx );
+        p5.translate(30,0,100);
+    }
     float val =  v*i;//cos( i + millis() * .001) ;
     for(int j=0; j<=pts; j++){
       vertices[j].x = latheRadius + sin(radians(angle))* (radius * val) ;
