@@ -25,7 +25,7 @@ boolean modoPresentacao; //tem um modo de presentacao e um outro de edicao
 boolean verTelas; //Para visualizar os margens da imagem. É evaluada pelos  PApp1 e PApp2
 
 /** Variavel só de teste*/
-String [] listaNomeCenarios = {"Revoada", "Ser01", "Nuvem", "Rodape_0", "Rodape_1"};
+String [] listaNomeCenarios = {"Revoada", "Ser01", "Nuvem", "Rodape_1", "Rodape_0"};
 int indexCenariosTeste = 0;
 String nomeCenarioTeste;
 
@@ -44,8 +44,8 @@ public void init() {
 }
 
 void setup () {
-  size(int (( 1024 * 2 )), int ( 768  ) , P3D);
- // size(int (( 1366 * 2 ) * .4 ), int ( 768 * .4), P3D);  
+//  size(int (( 1024 * 2 )), int ( 768  ) , P3D);
+  size(int (1440 ), int ( 540), P3D);  
   println("inicio setup() PApplet base");
   frame.setLocation(0, 0 ); //posicionamento da janela	
   frame2 = new PFrame2(); //criação do frame que conterão o codigo PApplet2 da segunda janela
@@ -119,9 +119,18 @@ public class PFrame2 extends Frame {
   public PFrame2 ()  {
     println("construtor da classe PFrame2");
     setUndecorated(true);
-    int alturaProjecao = int ( 768  );
-    setBounds(0,0,	int (( 1024 * 2 )   ), alturaProjecao );
-    setLocation( width, 0);  //setLocation( (int) (width), alturaProjecao); 
+    
+/*  PARA SIZE EM 4 TELAS
+    int alturaProjecao = 768; 
+    setBounds(0,0,  int (( 1024 * 2 )   ), alturaProjecao );
+    setLocation( width, 0);  
+*/
+    
+/*  */
+    int alturaProjecao = 540; //size em uma tela só
+    setBounds(0,0,  1440 , alturaProjecao );
+    setLocation(0, alturaProjecao + 10); 
+    
     PApp2 = new PApplet2();
     add (PApp2);
     PApp2.init();
@@ -134,8 +143,8 @@ public class PApplet2 extends PApplet {
   boolean modoPresentacao; //tem um modo de presentacao e um outro de edicao
 
   public void setup(){
-    size(int (( 1024 * 2 ) ), int ( 768 ) , P3D);
-  //size(int ( 1366 * 2 * .4) , int (768 * .4), P3D );
+//    size(int (( 1024 * 2 ) ), int ( 768 ) , P3D); //size em 4 telas
+    size(1440, 540, P3D);   //size em uma tela só
     modelo3Db = new Modelo3D(this, "PApp2"); 
   }
   public void draw () {
@@ -350,6 +359,10 @@ public void keyPressed (){
 		break;
         case 'v':
                 verTelas = !verTelas;
+                break;
+        case 'i':
+                indexCenariosTeste++;
+                indexCenariosTeste = indexCenariosTeste % listaNomeCenarios.length;
                 break;
   }
 //  println(mudancaPosicao);

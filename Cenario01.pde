@@ -10,7 +10,7 @@ class Cenario01 extends Cenario {
   Cenario01(PApplet _p5, float angX, float angY, float angZ, int radEsfera, String _nome) {
     super(angX, angY, angZ, radEsfera, _nome); //angulos que vāo determinar a posiçāo da cena segundo a esfera base.
     p5 = _p5;
-    posIni =  new PVector (0, height/2, 0); //coloca o ponto 0,0,0 da animaçāo sobre a superficie da esfera
+    posIni =  new PVector (0, 0, 0); //coloca o ponto 0,0,0 da animaçāo sobre a superficie da esfera
 
     particleCollection = new ArrayList();
 

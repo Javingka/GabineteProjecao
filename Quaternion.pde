@@ -44,7 +44,15 @@ class Quaternion {
     this.z = p.z;
      
     return this;
-  } 
+  }
+  public Quaternion set(final Vec3D p) {
+    this.w = 0;
+    this.x = p.x;
+    this.y = p.y;
+    this.z = p.z;
+     
+    return this;
+  }  
   public Quaternion set(final PMatrix3D mat) {
     double fourWSquaredMinus1 = mat.m00 + mat.m11 + mat.m22;
     double fourXSquaredMinus1 = mat.m00 - mat.m11 - mat.m22;

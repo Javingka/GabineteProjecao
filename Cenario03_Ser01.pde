@@ -87,6 +87,7 @@ class Cenario03_Ser01 {
    
    if (isWireFrame){
      p5.stroke(255);
+     p5.strokeWeight(1);
      p5.noFill();
    }
      else {
@@ -265,6 +266,7 @@ public void manifestacaoSer03(){
 //        p5.rotateX( nx );
         p5.translate(30,0,100);
     }
+    p5.strokeWeight( ( 2 - (2.5* i/segments))) ;
     float val =  v*i;//cos( i + millis() * .001) ;
     for(int j=0; j<=pts; j++){
       vertices[j].x = latheRadius + sin(radians(angle))* (radius * val) ;

@@ -36,6 +36,9 @@ class Cenario01_Passaro {
   PVector posRefPassaro; //Pos de referenca para girar PVector segundo a matrix
   PVector posQuaternionPassaro; //PVector com a posicao definida pelo quaternion
   // constructor
+  int formacaoPassaros; //número que define uma ou outra formação de pássaros, ate agora s[o 2 posibilidades, tunel (0) e anel(1) 
+  
+  
   Cenario01_Passaro(PApplet _p5, float _xpos, float _ypos, float _zpos, float _xspeed, float _yspeed, float _zspeed) {
     p5 = _p5;
     id_par = CONTADOR;
@@ -58,13 +61,14 @@ class Cenario01_Passaro {
     quaternionPassaro = new Quaternion();
     posRefPassaro = new PVector(0, 1, 0);
     posQuaternionPassaro = new PVector();
+    formacaoPassaros = 0;
   }
 
   // functionalities
   void run(float variacao) {
     update(variacao);
     display();
-    bounce();
+//    bounce();
   }
 
 
@@ -88,10 +92,20 @@ class Cenario01_Passaro {
       float targetY = cos (id_par + frameCount * .01) * diametroTunelPassaros;
       float targetZ = sin (id_par + frameCount * .01) * diametroTunelPassaros;
 
-      xpos += (targetX - xpos) * easing; // pos deseada - pos atual * um amortecedor
-      ypos += (targetY - ypos) * easing;
-      zpos += 0;//(targetZ - zpos) * easing;
-  } 
+      switch (formacaoPassaros) {
+        case 0: //tunel
+          xpos += (targetX - xpos) * easing; // pos deseada - pos atual * um amortecedor
+          ypos += (targetY - ypos) * easing;
+          zpos += 0;//(targetZ - zpos) * easing;
+          break;
+        case 1: //anel
+          xpos += (targetX - xpos) * easing; // pos deseada - pos atual * um amortecedor
+          ypos += (targetY - ypos) * easing;
+          zpos += (targetZ - zpos) * easing;
+          break;
+      }
+      
+    } 
 
   //motion of the particle
 
@@ -100,14 +114,14 @@ class Cenario01_Passaro {
 
   //  println(speed);
   m_speed = map(speed, 0, 20, 0.05, 0.1);
-  m_wingspeed = map(speed, 0, 20, 3, 1);
+  m_wingspeed = map(speed, 0, 20, 8.0, 3.0);
 
   //wingtip motion
   float angle = frameCount/m_wingspeed;  //keep the point so it forces float mode!
   //wingtip points
   //wfran= random(2);
   x=  map(sin(angle), -1, 1, 113, 202);
-  x2 = map (sin(angle), -1, 1, -111, -202);
+  x2 = map (sin(angle), -1, 1, -113, -202);
   y=  map(sin(angle), -1, 1, 71, 125);
 
   //modifiers of the constructed logo
@@ -125,57 +139,34 @@ class Cenario01_Passaro {
 void display() {
 
   p5.pushMatrix();
-  //  float aa = map(mouseX, 0, width, 0, PI);
-  //    float aaa = map(mouseY, 0, height, 0, PI);
-  //  p5.rotateX(PI*1.5);//1.6);
-  //  p5.rotateY(PI*.25);
+ switch (formacaoPassaros) {
+      case 0: //tunel
+        //sem mudanzas na rotação
+        break;
+      case 1: //anel
+        p5.rotateX(PI*1.5);
+        p5.rotateY(PI*.25);
+        break;
+    }
+
 
   velocidade.normalize();
   //velocidade = new Vec3D(0,0,5);
   p5.translate(xpos, ypos, zpos);
 
-
-  //  p5.ellipse(0,0,2,2);
-  //  p5.stroke(0,255,0,100);
-
-  //  p5.line(0,0,0, velocidade.x*9,velocidade.y*9,velocidade.z*9);
+//    p5.stroke(0,255,0);
+//    p5.line(0,0,0, velocidade.x*9,velocidade.y*9,velocidade.z*9);
 
   //  p5.stroke(0,255,0);
   //  p5.line(0,0,0, 0,30,0); //linha no eiso Y
 
-  velocidade = velocidade.toSpherical(); //x = radius y = azimuth z = theta
+//    p5.rotateX ( PI+ velocidade.headingYZ() ); //não tenho claresa de como colocar aqui o angulo de variação em X
+    p5.rotateZ ( PI*.5 + velocidade.headingXY());
+    p5.rotateY ( velocidade.headingXZ() );   
+    
+//     p5.stroke(255,0,0);
+//    p5.line(0,0,0,10,0,0);
 
-  float x = cos(velocidade.y)*sin(velocidade.z)*(velocidade.x);
-  float y = cos(velocidade.z)*(velocidade.x);
-  float z = sin(velocidade.y)*sin(velocidade.z)*(velocidade.x);
-
-  // float ax = velocidade.headingYZ();
-  // float ay = velocidade.headingXZ();// -PI*.5;
-  // float az = velocidade.headingXY() - PI*.5;// -PI*.5;
-  p5.rotateX ( x);
-  p5.rotateY ( y);
-  p5.rotateZ ( z);
-  //  println("velocidade: " + velocidade);
-  /*  PMatrix3D matrixPassaro = new PMatrix3D();
-   PVector posicaoTempPass = new PVector();
-   Quaternion passaroQuat = new Quaternion();
-   
-   passaroQuat.set(velocidade);
-   matrixPassaro.reset();
-   matrixPassaro.set(passaroQuat.getMatrix());
-   p5.applyMatrix(matrixPassaro);
-   */
-  //  velocidade.normalize();
-  //  quaternionPassaro.set(velocidade);
-  //  quaternionPassaro.mult(posRefPassaro, posQuaternionPassaro); 
-  //  p5.rotateX ( ang.x );
-  //  p5.rotateY ( ang.y );
-  //  p5.rotateZ ( ang.z );
-  //  p5.applyMatrix(quaternionPassaro.getMatrix());
-
-  /*  p5.stroke(255,0,0); p5.line(0,0,0, 20,0,0);//posQuaternionPassaro.x*10,posQuaternionPassaro.y*10,posQuaternionPassaro.z*10); //linha no eiso Y
-   p5.stroke(0,0,255); p5.line(0,0,0, 0,0,20);
-   p5.stroke(0,255,0); p5.line(0,0,0, 0,20,0);*/
 
   p5.scale(m_speed);
   //shape(logo, 0, 0, dia, dia);
