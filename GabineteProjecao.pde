@@ -5,7 +5,7 @@ import controlP5.*;
 import hypermedia.net.*; //UDP
 
 // the UDP object
-UDP udp;  
+//  UDP udp;  
 //MODELO.
 Modelo3D modelo3D;
 
@@ -47,7 +47,7 @@ void setup () {
 
 void draw () {
   background(0);
-
+  
   if (verTelas) {
     camera();
     desenhaTela();
@@ -59,14 +59,15 @@ void draw () {
 
 /** metodo temporal para visualizar os cenarios */
 public void mousePressed(){
-  String nomeCenario = "Revoada";
-  PVector pos = new PVector(PI*.25, 0, PI*.5);
+  String nomeCenario = "Nuvem";
+  PVector pos = getAngulosCenario(nomeCenario);
   PVector cam = new PVector(0, 0, 0);
   
-  println("ver cenario: " + nomeCenario + " pos: " + pos);
-  modelo3D.setAng_X_Puntero( pos.x );
-  modelo3D.setAng_Y_Puntero( pos.y );
-  modelo3D.setAng_Z_Puntero( pos.z );
+// É preciso fazer a resta de TWO_PI - valor angulo. tem relação com a definição dos angulos que definem a câmara na clase Modelo, 
+// mas não tenho clareza de porque cheguei nessa conclusão,  mas rola.
+  modelo3D.setAng_X_Puntero( TWO_PI - pos.x );
+  modelo3D.setAng_Y_Puntero( TWO_PI - pos.y );
+  modelo3D.setAng_Z_Puntero( TWO_PI - pos.z );
   modelo3D.setAng_X_Camara( cam.x );
   modelo3D.setAng_Y_Camara( cam.y );
   modelo3D.setAng_Z_Camara( cam.z );    
@@ -92,6 +93,18 @@ public void desenhaTela() {
   text("1", width*.25f, h/2);
   text("2", width*.75f, h/2);
   popStyle();
+}
+public void setDistanciaFocoCamara(float d){
+modelo3D.setDistanciaFoco(d);
+}
+public void ligaCenarioNome(String nome){
+modelo3D.ligaCenario(nome);
+}
+public void desligaCenarioNome(String nome){
+modelo3D.desligaCenario(nome);
+}
+public PVector getAngulosCenario(String nome) {
+return modelo3D.getAngulosCenario(nome);
 }
 
 //===========================================================================================================================================

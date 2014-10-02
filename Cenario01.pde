@@ -25,10 +25,9 @@ class Cenario01 extends Cenario {
  }
 void drawCenario(){
   
-  p5.pushMatrix();
+ // p5.pushMatrix();
   p5.translate(posIni.x, posIni.y, posIni.z);
-//  p5.stroke(0,0,255);
-//  p5.line(0,0,0,0,-2000,0);
+  
 //  p5.pointLight(200, 200, 200, 0, 0, 0); LUZ
 //  float var = sin (frameRate * .01);
 //  p5.fill(255,255,0); p5.noStroke();
@@ -41,7 +40,7 @@ void drawCenario(){
     myParticle.run();
   }
   
-  p5.popMatrix();
+//  p5.popMatrix();
  // the big switch
   
 }

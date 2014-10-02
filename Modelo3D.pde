@@ -32,7 +32,7 @@ class Modelo3D {
     
     listaCenariosLigados = new ArrayList <String>();
     cenarios = new ArrayList <Cenario>();
-    cenarios.add( new Cenario01(p5, PI*.25,0, PI*.5, radEsfera, "Revoada") );
+    cenarios.add( new Cenario01(p5, PI*.5 ,0,PI*.5, radEsfera, "Revoada") );
     cenarios.add( new Cenario02(p5, 0,  PI*1.5, PI*.5, radEsfera,  "Atraccao" ) );
     cenarios.add( new Cenario03(p5, PI*.25, 0,  0 , radEsfera, "Ser01") );
     if (nomePai.equals("PApp1"))  cenarios.add( new Cenario04(p5, 0, PI*.5,  PI*.5, radEsfera, "Nuvem", "WithControls") ); //so o papplet1 tem controles p5
@@ -70,6 +70,7 @@ class Modelo3D {
   public void desligaCenario(String nomeC) {
     if ( listaCenariosLigados.contains(nomeC) ) {
        listaCenariosLigados.remove(nomeC);
+       println("cenário desligado: "+ nomeC);
     } 
   }
   public void setDesloques(float dx, float dy, float dz) {
@@ -92,28 +93,29 @@ class Modelo3D {
     settingCamera();
 //    p5.pushMatrix();
     
-/*    p5.fill(50);
+/*      p5.fill(50);
     p5.stroke(255);//uv255, 100);
     p5.sphereDetail(80);
     p5.sphere(radEsfera); //desenha esfera 
 */   
 //DESENHO CENARIOS    
-    for ( Cenario c : cenarios ){
-      String n = c.getNameCenario();
-      if (listaCenariosLigados.contains(n)) {
-        if (n.equals("Nuvem")) {
+    for ( Cenario c : cenarios ){ //bucle por cada um dos cenarios declarados
+      String n = c.getNameCenario(); //pegamos o nome de cada cenário a evaluar
+      if (listaCenariosLigados.contains(n)) { //evaluamos se o cenário esta na lista de cenários ligados
+        if (n.equals("Nuvem")) { //se esta na lista, evaluamos se o cenário é o "Nuvem", nesse caso é ligado com o seguinte método
           ligaCenario( c , new PVector (0, PI*.01f, 0) ); //se desenha o cenario com um offset pra fazer-lho visivel
-        } else {
+        } else { //Se náo é Nuvem liga com o método para todo o resto dos cenários
           ligaCenario( c );  
         }
       }
     }
-//    p5.popMatrix();
-//CALCULO DISTANCIAS
+//   p5.popMatrix();
+//   CALCULO DISTANCIAS
 //   println("distancia cAtraccao: " + cAtraccao.getDistanceToUpPosition() + " distancia revoada: " + revoada.getDistanceToUpPosition());
  }
   
   public void ligaCenario(Cenario c){
+//    println( c.getAnguloPosicaoX() + " " + c.getAnguloPosicaoY() + " " + c.getAnguloPosicaoZ() );
     p5.pushMatrix();
     p5.rotateX( c.getAnguloPosicaoX() );
     p5.rotateY( c.getAnguloPosicaoY() ); 
@@ -123,6 +125,7 @@ class Modelo3D {
     p5.popMatrix();
   }
   public void ligaCenario(Cenario c, PVector offset){
+    println( "Cenario Nuvem ligando" );
     p5.pushMatrix();
     p5.rotateX( c.getAnguloPosicaoX() + offset.x );
     p5.rotateY( c.getAnguloPosicaoY() + offset.y );
@@ -133,7 +136,7 @@ class Modelo3D {
   }
 
   public void settingCamera() {
-    
+//    println( "angulos posição puntero: " + angulosPosicaoPuntero.x + " " + angulosPosicaoPuntero.y + " " + angulosPosicaoPuntero.z );
 //    p5.pushMatrix();
     matrixPuntero.reset();
     matrixPuntero.rotateZ(angulosPosicaoPuntero.z);//bankModelo);
@@ -154,7 +157,7 @@ class Modelo3D {
     quaternionCamara.mult(posRefCamara, posQuaternionCamara); //obtenemos a posicao do puntero no vector "posQuaternionCamara"
     posFocoCamara = PVector.add(  posQuaternionPuntero , posQuaternionCamara );
 //    println("indexPosicaoCamara"+ indexPosicaoCamara);
-//     println("distanciaFoco: "+distanciaFoco+" Puntero: " + posQuaternionPuntero + " Camara: " + posQuaternionCamara + " posFocoCamara: " + posFocoCamara);
+//    println("distanciaFoco: "+distanciaFoco+" Puntero: " + posQuaternionPuntero + " Camara: " + posQuaternionCamara + " posFocoCamara: " + posFocoCamara);
 //    p5.popMatrix();
     camaraMovil(posQuaternionPuntero, posFocoCamara ); //Ponto posicao do olho, ponto do centro da imagem
     
