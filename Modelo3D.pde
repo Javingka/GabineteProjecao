@@ -1,4 +1,3 @@
-
 class Modelo3D {
  
 //VARIAVEIS DE DEFINIÇĀO DA ESPERA
@@ -24,7 +23,7 @@ class Modelo3D {
   PVector posFocoCamara;
   float distanciaFoco;
   String nomePai; //string para conhecer de qual projecáo é o objeto
-  
+ 
   Modelo3D (PApplet _p5, String nomePai) {
     p5 = _p5; 
     
@@ -61,18 +60,7 @@ class Modelo3D {
     ((Cenario04)cenarios.get(3)).aplicaMudanca(); //cenario nuvem
     ((Cenario01)cenarios.get(0)).cambiaTarget(); //cenario revoada
   }
-  public void ligaCenario(String nomeC) {
-    if ( !listaCenariosLigados.contains(nomeC) ) {
-       listaCenariosLigados.add(nomeC);
-       println("novo cenário ligado: "+ nomeC);
-    } 
-  }
-  public void desligaCenario(String nomeC) {
-    if ( listaCenariosLigados.contains(nomeC) ) {
-       listaCenariosLigados.remove(nomeC);
-       println("cenário desligado: "+ nomeC);
-    } 
-  }
+  
   public void setDesloques(float dx, float dy, float dz) {
     //Os valores vem desde a classe principal, floats entre 0 e 1.
    desloqueX = dx;
@@ -87,11 +75,25 @@ class Modelo3D {
   // ----------------------------------------------------------
   // DESENHO DO MODELO DA ESFERA
   // ----------------------------------------------------------  
+  
   public void desenhaModelo() {
     angulosPosicaoPuntero.lerp(angulosFinalPuntero, .1);
     
     settingCamera();
 //    p5.pushMatrix();
+    
+    //ponto centro da imagem
+/*    p5.pushMatrix();
+    p5.pushStyle();
+    p5.translate(posFocoCamara.x, posFocoCamara.y, posFocoCamara.z);
+    matrixCenario.invert();
+    p5.applyMatrix(matrixCenario);
+    p5.noFill(); p5.stroke(255,255,0);
+    p5.rectMode(CENTER);
+    p5.rect(0,0, 50,20);
+    p5.sphere(4);
+    p5.popStyle();
+    p5.popMatrix();*/
     
 /*      p5.fill(50);
     p5.stroke(255);//uv255, 100);
@@ -152,9 +154,15 @@ class Modelo3D {
     matrixCenario.apply(matrixPuntero);
     quaternionCamara.set(matrixCenario);
     
+    
     posRefCamara = new PVector(0, 0, -1); // O vetor de referencia é criado em cada loop para poder variar a distancia do vetor
     posRefCamara.setMag(distanciaFoco); //a variavel distancia é dada desde ModeloGabinete
     quaternionCamara.mult(posRefCamara, posQuaternionCamara); //obtenemos a posicao do puntero no vector "posQuaternionCamara"
+    
+    println("posRefCamara: " + posRefCamara  );
+    println("posQuaternionPuntero: " + posQuaternionPuntero  );
+    println("posQuaternionCamara: " + posQuaternionCamara  );
+    
     posFocoCamara = PVector.add(  posQuaternionPuntero , posQuaternionCamara );
 //    println("indexPosicaoCamara"+ indexPosicaoCamara);
 //    println("distanciaFoco: "+distanciaFoco+" Puntero: " + posQuaternionPuntero + " Camara: " + posQuaternionCamara + " posFocoCamara: " + posFocoCamara);
@@ -207,6 +215,42 @@ class Modelo3D {
       }
     }
     return angP;
+  }
+  
+
+  /** ----------------------------------------------------------
+  * METODOS De modificação | Esses métodos serão chamados desde a classe principal 'Gabinete Projecao' dependendo dos dados recebidos desdo o macmini, 
+  *  ---------------------------------------------------------- */  
+  
+  /** O nome do cenario a ligar */
+  public void ligaCenario(String nomeC) {
+    if ( !listaCenariosLigados.contains(nomeC) ) {
+       listaCenariosLigados.add(nomeC);
+       println("novo cenário ligado: "+ nomeC);
+    } 
+  }
+  /** O nome do cenario a desligar */
+  public void desligaCenario(String nomeC) {
+    if ( listaCenariosLigados.contains(nomeC) ) {
+       listaCenariosLigados.remove(nomeC);
+       println("cenário desligado: "+ nomeC);
+    } 
+  }
+  /** Novos dados para posiçao do puntero que define o punto a visualizar do modelo */
+  public void novaPosicaoPuntero(PVector angulosPos){
+    
+  }
+  /** Novos dados para a posiçao da camara */
+  public void novaPosicaoCamara(PVector angulosCamara){
+    
+  }
+  /** para o recebimento de dados de interaçao, de maneira continua, */
+  public void novosDadosContinuos (float posicao, float movimentacao, float deslocamento){
+    
+  }
+  /** para o recebimento dos dados finais depois da interaçao com qualquer cenario interativo */
+  public void novosDadosFinais (float posicao, float movimentacao, float deslocamento){
+    
   }
   
 }

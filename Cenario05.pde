@@ -25,13 +25,16 @@ class Cenario05 extends Cenario  {
     float ryp = (p5.mouseY-(p5.height/2)) * 0.005;
     rx = rx*0.9 + rxp*0.1;
     ry = ry*0.9 + ryp*0.1;
-  
-    translate(0, radio, 0);
-    rotateY(rx);
-    rotateX(ry);
-    fill(0);
-    noStroke();
-    sphere(radio);
+    
+    p5.stroke(255,0,0); p5.fill(0,255,20,100);
+    p5.box( 40 ); 
+     
+    p5.translate(0, radio, 0);
+    p5.rotateY(rx);
+    p5.rotateX(ry);
+    p5.fill(0);
+    p5.noStroke();
+    p5.sphere(radio);
   
     for (int i = 0; i < lista.length; i++) {
       lista[i].dibujar();

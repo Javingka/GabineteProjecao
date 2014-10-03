@@ -8,7 +8,7 @@ import hypermedia.net.*; //UDP
 //  UDP udp;  
 //MODELO.
 Modelo3D modelo3D;
-
+ 
 boolean modoPresentacao; //tem um modo de presentacao e um outro de edicao
 boolean verTelas; //Para visualizar os margens da imagem
 
@@ -32,7 +32,7 @@ void setup () {
   frame.setLocation((int)(width*.25), 0 );
 
   modelo3D = new Modelo3D(this, "PApp1");
-
+  
   rectMode(CENTER);
   textSize(50);
   textAlign(CENTER, CENTER);
@@ -40,13 +40,15 @@ void setup () {
   verTelas = modoPresentacao = false;
   
 //  udp = new UDP( this, 6000, "127.0.0.1" );
-//  udp.listen( true ); // wait constantly for incomming data
+//  udp.listen( true ); //   wait constantly for incomming data
   
   println("fim setup() PApplet base");
 }
 
 void draw () {
   background(0);
+  
+  modelo3D.setDistanciaFoco( map(mouseX, 0, width, 0,1) );
   
   if (verTelas) {
     camera();
@@ -59,7 +61,7 @@ void draw () {
 
 /** metodo temporal para visualizar os cenarios */
 public void mousePressed(){
-  String nomeCenario = "Nuvem";
+  String nomeCenario = "Revoada";
   PVector pos = getAngulosCenario(nomeCenario);
   PVector cam = new PVector(0, 0, 0);
   
@@ -71,7 +73,7 @@ public void mousePressed(){
   modelo3D.setAng_X_Camara( cam.x );
   modelo3D.setAng_Y_Camara( cam.y );
   modelo3D.setAng_Z_Camara( cam.z );    
-  modelo3D.setDistanciaFoco( 1 );
+//  modelo3D.setDistanciaFoco( 1 );
   verTelas = false  ;
   
   modelo3D.ligaCenario(nomeCenario);
@@ -114,36 +116,30 @@ return modelo3D.getAngulosCenario(nome);
  * This is the program receive handler. To perform any action on datagram reception, you need to implement this method in your code. She will be 
  * automatically called by the UDP object each time he receive a nonnull message.
  */
-String [] indicadorDadosEnviados = { 
-  "CenarioOn", "cenarioOff", "cenarioPosicao", "dadosContinuos", "dadosFinais"
-};
-boolean novoDado = false;
-String proximoDadoEntrante;
+
 void receive( byte[] data ) {
-
   String dataEntrante = new String (data); 
-  println("dataEntrante: "  + dataEntrante);
-
-  for ( int i = 0; i < indicadorDadosEnviados.length; i++) {
-    String indicador = indicadorDadosEnviados[i];
-    if (dataEntrante.equals(indicador)) { //Se algum dos nomes coincide então esta se definindo qual é o proximo dado a receber.
-      novoDado = true; //novoDado vira true
-      proximoDadoEntrante = indicador; //guardamos o index para indicar que tipo de dado vai se receber
-      return; //e saimos do método para esperar o novo dado a ser enviado
-    }
-  }
-  if (novoDado) {
-    if ( proximoDadoEntrante.equals( indicadorDadosEnviados[0] ) ) { // CenarioOn | Recebe o nome do cenario a ligar
-      String nomeC = new String (data); 
-      println("liga Cenario: "  + nomeC);
-      modelo3D.ligaCenario(nomeC);
-      
-    } else if ( proximoDadoEntrante.equals( indicadorDadosEnviados[1] ) ) {
-    } else if ( proximoDadoEntrante.equals( indicadorDadosEnviados[2] ) ) {
-    } else if ( proximoDadoEntrante.equals( indicadorDadosEnviados[3] ) ) {
-    } else if ( proximoDadoEntrante.equals( indicadorDadosEnviados[4] ) ) {
-    }
-    novoDado = false;
-  }
+  
+  
+  //VARIAVEIS
+  String nomeCenario = "";
+  PVector angulosPos = new PVector();
+  PVector angulosCamara = new PVector();
+  float posicao, movimentacao, deslocamento;
+  posicao = movimentacao = deslocamento = 0;
+  
+  //MÉTODOS DE MODELOS  
+  /** String:  O nome do cenario a ligar */
+  modelo3D.ligaCenario( nomeCenario);
+  /** String:  O nome do cenario a desligar */
+  modelo3D.desligaCenario( nomeCenario);
+  /** PVector: Novos dados para posiçao do puntero que define o punto a visualizar do modelo */
+  modelo3D.novaPosicaoPuntero(angulosPos);
+  /** PVector: Novos dados para a posiçao da camara */
+  modelo3D.novaPosicaoCamara(angulosCamara);
+  /** 3 floats: para o recebimento de dados de interaçao, de maneira continua, */
+  modelo3D.novosDadosContinuos ( posicao, movimentacao, deslocamento);
+  /** 3 floats: para o recebimento dos dados finais depois da interaçao com qualquer cenario interativo */
+  modelo3D.novosDadosFinais ( posicao, movimentacao, deslocamento);
 }
 
