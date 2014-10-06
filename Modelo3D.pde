@@ -56,6 +56,9 @@ class Modelo3D {
     distanciaFoco = width; //O valro que representa o rango de distanca posivel
     println("nova classe Modelo3D");
   }
+  public void setPosRefCamara(PVector pos) {
+    posRefCamara = pos; 
+  }
   public void mousePress() {
     ((Cenario04)cenarios.get(3)).aplicaMudanca(); //cenario nuvem
     ((Cenario01)cenarios.get(0)).cambiaTarget(); //cenario revoada
@@ -154,14 +157,14 @@ class Modelo3D {
     matrixCenario.apply(matrixPuntero);
     quaternionCamara.set(matrixCenario);
     
+    PVector posRefCamaraAtual = posRefCamara; 
+//    posRefCamaraAtual = new PVector(0, 0, -1); // O vetor de referencia é criado em cada loop para poder variar a distancia do vetor
+    posRefCamaraAtual.setMag(distanciaFoco); //a variavel distancia é dada desde ModeloGabinete
+    quaternionCamara.mult(posRefCamaraAtual, posQuaternionCamara); //obtenemos a posicao do puntero no vector "posQuaternionCamara"
     
-    posRefCamara = new PVector(0, 0, -1); // O vetor de referencia é criado em cada loop para poder variar a distancia do vetor
-    posRefCamara.setMag(distanciaFoco); //a variavel distancia é dada desde ModeloGabinete
-    quaternionCamara.mult(posRefCamara, posQuaternionCamara); //obtenemos a posicao do puntero no vector "posQuaternionCamara"
-    
-    println("posRefCamara: " + posRefCamara  );
-    println("posQuaternionPuntero: " + posQuaternionPuntero  );
-    println("posQuaternionCamara: " + posQuaternionCamara  );
+//    println("posRefCamara: " + posRefCamara  );
+//    println("posQuaternionPuntero: " + posQuaternionPuntero  );
+//    println("posQuaternionCamara: " + posQuaternionCamara  );
     
     posFocoCamara = PVector.add(  posQuaternionPuntero , posQuaternionCamara );
 //    println("indexPosicaoCamara"+ indexPosicaoCamara);
@@ -226,6 +229,9 @@ class Modelo3D {
   public void ligaCenario(String nomeC) {
     if ( !listaCenariosLigados.contains(nomeC) ) {
        listaCenariosLigados.add(nomeC);
+       if ( nomeC.equals("Rodape_0")) {
+	setPosRefCamara(new PVector (0, .3, -1) ); //novo Vector de referencia para mudar o angulo anchor da camara
+       }
        println("novo cenário ligado: "+ nomeC);
     } 
   }

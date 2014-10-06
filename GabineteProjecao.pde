@@ -61,7 +61,7 @@ void draw () {
 
 /** metodo temporal para visualizar os cenarios */
 public void mousePressed(){
-  String nomeCenario = "Revoada";
+  String nomeCenario = "Rodape_0";
   PVector pos = getAngulosCenario(nomeCenario);
   PVector cam = new PVector(0, 0, 0);
   
