@@ -31,13 +31,13 @@ class Modelo3D {
     
     listaCenariosLigados = new ArrayList <String>();
     cenarios = new ArrayList <Cenario>();
-    cenarios.add( new Cenario01(p5, PI*.5 ,0,PI*.5, radEsfera, "Revoada") );
+    cenarios.add( new Cenario01(p5, 5.02,0 , 0.02, radEsfera, "Revoada") );
     cenarios.add( new Cenario02(p5, 0,  PI*1.5, PI*.5, radEsfera,  "Atraccao" ) );
     cenarios.add( new Cenario03(p5, PI*.25, 0,  0 , radEsfera, "Ser01") );
-    if (nomePai.equals("PApp1"))  cenarios.add( new Cenario04(p5, 0, PI*.5,  PI*.5, radEsfera, "Nuvem", "WithControls") ); //so o papplet1 tem controles p5
-    else cenarios.add( new Cenario04(p5, 0, 0,  PI*.5, radEsfera, "Nuvem") );
-    cenarios.add( new Cenario05(p5, 0, 0,  0 , radEsfera, "Rodape_0") );
-    
+    if (nomePai.equals("PApp1"))  cenarios.add( new Cenario04(p5, PI*1.98, PI*1.5,  PI*.5, radEsfera, "Nuvem", "WithControls") ); //so o papplet1 tem controles p5
+    else cenarios.add( new Cenario04(p5, PI*1.98, 0,  PI*.5, radEsfera, "Nuvem") );
+    cenarios.add( new Cenario05(p5, PI*.15, 0,  0 , radEsfera, "Rodape_0") );
+    cenarios.add( new Cenario06(p5, 0, PI*1.1, 0, radEsfera, "Rodape_1"));
     
     desloqueX = desloqueY = desloqueZ = 0; //A posiçāo inicial.
     
@@ -80,7 +80,7 @@ class Modelo3D {
   // ----------------------------------------------------------  
   
   public void desenhaModelo() {
-    angulosPosicaoPuntero.lerp(angulosFinalPuntero, .1);
+//    angulosPosicaoPuntero.lerp(angulosFinalPuntero, .1);
     
     settingCamera();
 //    p5.pushMatrix();
@@ -107,9 +107,12 @@ class Modelo3D {
     for ( Cenario c : cenarios ){ //bucle por cada um dos cenarios declarados
       String n = c.getNameCenario(); //pegamos o nome de cada cenário a evaluar
       if (listaCenariosLigados.contains(n)) { //evaluamos se o cenário esta na lista de cenários ligados
+				//Filtro para agregar deslocamentos do pontero de posição, para visualizar os cenarios desde diferentes pontos.
         if (n.equals("Nuvem")) { //se esta na lista, evaluamos se o cenário é o "Nuvem", nesse caso é ligado com o seguinte método
           ligaCenario( c , new PVector (0, PI*.01f, 0) ); //se desenha o cenario com um offset pra fazer-lho visivel
-        } else { //Se náo é Nuvem liga com o método para todo o resto dos cenários
+								} else if (n.equals("Rodape_1")) {
+					ligaCenario( c , new PVector (-PI*.03,0 , 0));
+				} else { //Se náo liga sem deslocamentos 
           ligaCenario( c );  
         }
       }
@@ -120,7 +123,7 @@ class Modelo3D {
  }
   
   public void ligaCenario(Cenario c){
-//    println( c.getAnguloPosicaoX() + " " + c.getAnguloPosicaoY() + " " + c.getAnguloPosicaoZ() );
+//    println( "anguloPosCenarioLigando: " + c.getAnguloPosicaoX() + " " + c.getAnguloPosicaoY() + " " + c.getAnguloPosicaoZ() );
     p5.pushMatrix();
     p5.rotateX( c.getAnguloPosicaoX() );
     p5.rotateY( c.getAnguloPosicaoY() ); 
@@ -130,7 +133,6 @@ class Modelo3D {
     p5.popMatrix();
   }
   public void ligaCenario(Cenario c, PVector offset){
-    println( "Cenario Nuvem ligando" );
     p5.pushMatrix();
     p5.rotateX( c.getAnguloPosicaoX() + offset.x );
     p5.rotateY( c.getAnguloPosicaoY() + offset.y );
@@ -140,35 +142,40 @@ class Modelo3D {
     p5.popMatrix();
   }
 
-  public void settingCamera() {
+	public void settingCamera() {
 //    println( "angulos posição puntero: " + angulosPosicaoPuntero.x + " " + angulosPosicaoPuntero.y + " " + angulosPosicaoPuntero.z );
 //    p5.pushMatrix();
-    matrixPuntero.reset();
-    matrixPuntero.rotateZ(angulosPosicaoPuntero.z);//bankModelo);
-    matrixPuntero.rotateX(angulosPosicaoPuntero.x);//pitchModelo);
-    matrixPuntero.rotateY(angulosPosicaoPuntero.y);//headingModelo);
-    quaternionPuntero.set(matrixPuntero);
-    quaternionPuntero.mult(posRefPuntero, posQuaternionPuntero); //obtenemos a posicao do puntero no vector "posQuaternionPuntero"
-    
+
+		matrixPuntero.reset();
+		matrixPuntero.rotateZ(angulosPosicaoPuntero.z);//bankModelo);
+		matrixPuntero.rotateX(angulosPosicaoPuntero.x);//pitchModelo); 
+		matrixPuntero.rotateY(angulosPosicaoPuntero.y);//headingModelo);
+		quaternionPuntero.set(matrixPuntero);
+		quaternionPuntero.mult(posRefPuntero, posQuaternionPuntero); //obtenemos a posicao do puntero no vector "posQuaternionPuntero"
+ 
+//		posQuaternionPuntero = cenarios.get(0).calculaPosCartesiana(posRefPuntero, angulosPosicaoPuntero.x,angulosPosicaoPuntero.y, angulosPosicaoPuntero.z);
+//		println("posQuaternionPuntero> " + posQuaternionPuntero);     
+
     matrixCenario.reset();
     matrixCenario.rotateZ(rotacaoDeCamara.z);//bankModelo);
     matrixCenario.rotateX(rotacaoDeCamara.x);//pitchModelo); map(mouseX, 0, width, 0, TWO_PI)
     matrixCenario.rotateY(rotacaoDeCamara.y);//headingModelo);
     matrixCenario.apply(matrixPuntero);
     quaternionCamara.set(matrixCenario);
-    
+						
     PVector posRefCamaraAtual = posRefCamara; 
 //    posRefCamaraAtual = new PVector(0, 0, -1); // O vetor de referencia é criado em cada loop para poder variar a distancia do vetor
     posRefCamaraAtual.setMag(distanciaFoco); //a variavel distancia é dada desde ModeloGabinete
+//		println("posRefCamaraAtual: "+ posRefCamaraAtual + "posQuaternionCamara: " + posQuaternionCamara);
     quaternionCamara.mult(posRefCamaraAtual, posQuaternionCamara); //obtenemos a posicao do puntero no vector "posQuaternionCamara"
-    
+     
 //    println("posRefCamara: " + posRefCamara  );
 //    println("posQuaternionPuntero: " + posQuaternionPuntero  );
 //    println("posQuaternionCamara: " + posQuaternionCamara  );
     
     posFocoCamara = PVector.add(  posQuaternionPuntero , posQuaternionCamara );
 //    println("indexPosicaoCamara"+ indexPosicaoCamara);
-//    println("distanciaFoco: "+distanciaFoco+" Puntero: " + posQuaternionPuntero + " Camara: " + posQuaternionCamara + " posFocoCamara: " + posFocoCamara);
+//    println("distanciaFoco: "+distanciaFoco+" Puntero: " + posQuaternionPuntero + " posQuaternionCamara: " + posQuaternionCamara + " posFocoCamara: " + posFocoCamara);
 //    p5.popMatrix();
     camaraMovil(posQuaternionPuntero, posFocoCamara ); //Ponto posicao do olho, ponto do centro da imagem
     
@@ -229,8 +236,9 @@ class Modelo3D {
   public void ligaCenario(String nomeC) {
     if ( !listaCenariosLigados.contains(nomeC) ) {
        listaCenariosLigados.add(nomeC);
+			//Aqui se pode filtrar para mudar a posição da câmara
        if ( nomeC.equals("Rodape_0")) {
-	setPosRefCamara(new PVector (0, .3, -1) ); //novo Vector de referencia para mudar o angulo anchor da camara
+				 setPosRefCamara(new PVector (0, .3, -1) ); //novo Vector de referencia para mudar o angulo anchor da camara
        }
        println("novo cenário ligado: "+ nomeC);
     } 
@@ -244,7 +252,10 @@ class Modelo3D {
   }
   /** Novos dados para posiçao do puntero que define o punto a visualizar do modelo */
   public void novaPosicaoPuntero(PVector angulosPos){
-    
+    setAng_X_Puntero(angulosPos.x); 
+    setAng_Y_Puntero(angulosPos.y); 
+    setAng_Z_Puntero(angulosPos.z); 
+
   }
   /** Novos dados para a posiçao da camara */
   public void novaPosicaoCamara(PVector angulosCamara){
@@ -260,3 +271,4 @@ class Modelo3D {
   }
   
 }
+    

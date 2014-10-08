@@ -48,7 +48,7 @@ void setup () {
 void draw () {
   background(0);
   
-  modelo3D.setDistanciaFoco( map(mouseX, 0, width, 0,1) );
+ // modelo3D.setDistanciaFoco( map(mouseX, 0, width, 0,1) );
   
   if (verTelas) {
     camera();
@@ -61,12 +61,14 @@ void draw () {
 
 /** metodo temporal para visualizar os cenarios */
 public void mousePressed(){
-  String nomeCenario = "Rodape_0";
-  PVector pos = getAngulosCenario(nomeCenario);
+  String nomeCenario = "Rodape_1";
+  PVector pos = modelo3D.getAngulosCenario(nomeCenario);
   PVector cam = new PVector(0, 0, 0);
   
 // É preciso fazer a resta de TWO_PI - valor angulo. tem relação com a definição dos angulos que definem a câmara na clase Modelo, 
 // mas não tenho clareza de porque cheguei nessa conclusão,  mas rola.
+	println("setAng_x_Puntero: " + pos + " x: " + (TWO_PI - pos.x) + " y: " + (TWO_PI - pos.y ) + " z: " + (TWO_PI - pos.z) );
+
   modelo3D.setAng_X_Puntero( TWO_PI - pos.x );
   modelo3D.setAng_Y_Puntero( TWO_PI - pos.y );
   modelo3D.setAng_Z_Puntero( TWO_PI - pos.z );
@@ -141,5 +143,35 @@ void receive( byte[] data ) {
   modelo3D.novosDadosContinuos ( posicao, movimentacao, deslocamento);
   /** 3 floats: para o recebimento dos dados finais depois da interaçao com qualquer cenario interativo */
   modelo3D.novosDadosFinais ( posicao, movimentacao, deslocamento);
+}
+		
+//===========================================================================================================================================
+// INTERACTION TEMPORAL | Por quanto não tiver conexção com o macmini, os testes de interação serão criados a continuação 
+//===========================================================================================================================================
+
+public void keyPressed (){
+	float anguloMudanca = 0;
+	PVector mudancaPosicao = modelo3D.getAnglulosDePos();	
+  switch (key) {
+	case 'j':	//moviemento para atras
+		anguloMudanca = (mudancaPosicao.x - 0.005) % TWO_PI; //modificação do angulo e restrição para ficar em valores dentro de TWO_PI 
+		mudancaPosicao = new PVector(anguloMudanca,mudancaPosicao.y,mudancaPosicao.z);
+		break;
+	case 'k':	//movimento para frente
+		anguloMudanca = (mudancaPosicao.x + 0.005) % TWO_PI;//modificação do angulo e restrição para ficar em valores dentro de TWO_PI 
+		mudancaPosicao = new PVector(anguloMudanca,mudancaPosicao.y,mudancaPosicao.z);
+		break;
+	case 'h':	//movimento para esquerda
+		anguloMudanca = (mudancaPosicao.z - 0.005) % TWO_PI;//modificação do angulo e restrição para ficar em valores dentro de TWO_PI 
+		mudancaPosicao = new PVector(mudancaPosicao.x, mudancaPosicao.y, anguloMudanca);
+		break;
+	case 'l': //movimento para dereita
+		anguloMudanca = (mudancaPosicao.z + 0.005) % TWO_PI;//modificação do angulo e restrição para ficar em valores dentro de TWO_PI 
+		mudancaPosicao = new PVector(mudancaPosicao.x, mudancaPosicao.y, anguloMudanca);
+		break;
+  }
+//  println(mudancaPosicao);
+  modelo3D.novaPosicaoPuntero(mudancaPosicao);
+
 }
 

@@ -20,7 +20,7 @@ class Cenario {
     
   }   
   
-  private PVector calculaPosCartesiana( PVector original , float ax, float ay, float az){
+  public PVector calculaPosCartesiana( PVector original , float ax, float ay, float az){
     float rX0, rX1, rX2;
     float rY0, rY1, rY2;
     float rZ0, rZ1, rZ2;

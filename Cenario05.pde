@@ -1,9 +1,9 @@
-
 class Cenario05 extends Cenario  {
   PApplet p5;
   PVector posIni;
   int cuantos = 8000;
   Pelo[] lista ;
+  ArrayList<PVector> pontosPelos;
   float radio;// = 200;
   float rx = 0;
   float ry =0;
@@ -16,8 +16,10 @@ class Cenario05 extends Cenario  {
     posIni = new PVector (0, p5.height*3, 0);
 
     lista = new Pelo[cuantos];
+		pontosPelos = new ArrayList<PVector>();
     for (int i = 0; i < lista.length; i++) {
       lista[i] = new Pelo(i);
+			pontosPelos.add( lista[i].getPeloPosicao() );
     }
     p5.noiseDetail(3);
   }
@@ -43,7 +45,7 @@ class Cenario05 extends Cenario  {
     p5.sphere(radio);
   
     for (int i = 0; i < lista.length; i++) {
-      lista[i].dibujar();
+      lista[i].dibujarPelo();
     }
   }
   class Pelo  {
@@ -54,15 +56,20 @@ class Cenario05 extends Cenario  {
     float largoVariable;
     int id;
     int idVariacao; 
-
+		PVector posicaoNormal; //posicao do ponto centro da esfera, com os valores normais dos angulos que definem a posição de cada pelo
+	  PVector posicaoProduto; //posição cartesiana do ponto multiplicado pelo largo do pelo
+	
     Pelo(int _id) { // what's wrong with a constructor here
       id = _id;
-      z = p5.random(-radio*.45, radio*.45);
-      phi = p5.random (PI*1.45, PI*1.55);
+ //     println("id: " + id + " radio: " + radio);
+      z = p5.random(-radio*.1, radio*.1);
+      phi = p5.random (PI*1.4, PI*1.6);
       largo = p5.random(.9, 1); //el largo en relacion al radio de la esfera que contiene el pelo
       theta = p5.asin(z/radio);
+			posicaoNormal = new PVector();
+			posicaoProduto = new PVector();
     }
-
+   
     void setLargoPeloVariable(float varPelo) {
       largoVariable = mapVar ( largo, varPelo); 
     }
@@ -71,13 +78,9 @@ class Cenario05 extends Cenario  {
       var = varLargo + p5.abs ( varLargo * p5.map(porcentajeCrecimento, 0, 1, -.01, .01));
       return var;
     }
-    void dibujar() {
-//      z = -radio *.9f;
-//      z = random(-radio, z);
-//      theta = asin(z/radio);
-    
-      float off = (p5.noise(p5.millis() * 0.000006, p5.sin(phi))-0.005) * 0.3;
-      float offb = (p5.noise(p5.millis() * 0.000007, p5.sin(z) * 0.0001)-0.5) * 0.3;
+		private void setPosCartesiana() {
+		  float off = 0;//(p5.noise(p5.millis() * 0.000006, p5.sin(phi))-0.005) * 0.3;
+      float offb = 0;// (p5.noise(p5.millis() * 0.000007, p5.sin(z) * 0.0001)-0.5) * 0.3;
   
       float thetaff = theta+off;
       float phff = phi+offb;
@@ -96,17 +99,26 @@ class Cenario05 extends Cenario  {
       float xb = xo * largoVariable;
       float yb = yo * largoVariable;
       float zb = zo * largoVariable;
-      
-	p5.stroke(255);
-	p5.point(xb, yb, zb);
+
+			posicaoNormal = new PVector(xo,yo,zo);
+			posicaoProduto = new PVector(xb,yb,zb);
+		}	
+    void dibujarPelo() {
+			setPosCartesiana();
+			p5.stroke(255);
+			p5.point(posicaoProduto.x , posicaoProduto.y , posicaoProduto.z );
       p5.strokeWeight(1);
       p5.beginShape(LINES);
       p5.stroke(0);
   //    vertex(x, y, z);
-      p5.vertex(xo, yo, zo);
+      p5.vertex(posicaoNormal.x,posicaoNormal.y ,posicaoNormal.z );
       p5.stroke(200, 150);
-      p5.vertex(xb, yb, zb);
+      p5.vertex(posicaoProduto.x , posicaoProduto.y , posicaoProduto.z );
       p5.endShape();
     }
-  }    
+
+	  public PVector getPeloPosicao() {
+	  	return posicaoProduto;
+  	}    
+	}
 }
