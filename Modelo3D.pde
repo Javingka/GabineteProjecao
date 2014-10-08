@@ -37,7 +37,7 @@ class Modelo3D {
     if (nomePai.equals("PApp1"))  cenarios.add( new Cenario04(p5, PI*1.98, PI*1.5,  PI*.5, radEsfera, "Nuvem", "WithControls") ); //so o papplet1 tem controles p5
     else cenarios.add( new Cenario04(p5, PI*1.98, 0,  PI*.5, radEsfera, "Nuvem") );
     cenarios.add( new Cenario05(p5, PI*.15, 0,  0 , radEsfera, "Rodape_0") );
-    cenarios.add( new Cenario06(p5, 0, PI*1.1, 0, radEsfera, "Rodape_1"));
+    cenarios.add( new Cenario06(p5, 0, 0, 0, radEsfera, "Rodape_1"));
     
     desloqueX = desloqueY = desloqueZ = 0; //A posiçāo inicial.
     
@@ -107,12 +107,12 @@ class Modelo3D {
     for ( Cenario c : cenarios ){ //bucle por cada um dos cenarios declarados
       String n = c.getNameCenario(); //pegamos o nome de cada cenário a evaluar
       if (listaCenariosLigados.contains(n)) { //evaluamos se o cenário esta na lista de cenários ligados
-				//Filtro para agregar deslocamentos do pontero de posição, para visualizar os cenarios desde diferentes pontos.
+				//Filtro para agregar deslocamentos na posicao dos cenários 
         if (n.equals("Nuvem")) { //se esta na lista, evaluamos se o cenário é o "Nuvem", nesse caso é ligado com o seguinte método
           ligaCenario( c , new PVector (0, PI*.01f, 0) ); //se desenha o cenario com um offset pra fazer-lho visivel
-								} else if (n.equals("Rodape_1")) {
-					ligaCenario( c , new PVector (-PI*.03,0 , 0));
-				} else { //Se náo liga sem deslocamentos 
+				} else if (n.equals("Rodape_1")) {
+					ligaCenario( c , new PVector (PI*.03,0 , 0));//-PI*.03
+				} else { //Se náo liga sem deslocamentos os cenários 
           ligaCenario( c );  
         }
       }

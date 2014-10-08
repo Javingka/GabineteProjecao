@@ -1,14 +1,27 @@
+import codeanticode.glgraphics.*;
 import java.awt.Frame;
 import java.awt.event.KeyEvent;
 import java.text.*;
 import controlP5.*;  
 import hypermedia.net.*; //UDP
 
-// the UDP object
-//  UDP udp;  
-//MODELO.
-Modelo3D modelo3D;
+
+/**
+=====================================================================================================
+PRIMEIRA JANELA PROJEÇÃO
+	O codigo nesse PAplet base do Processing, vai ser projetado nos projetores 1 e 2
+====================================================================================================
+*/
+
+/** Objeto de tipo UDP usado para a comunicação com o outro computador */
+UDP udp;  
  
+/**Variaveis para a criação da segunda janela de projeção*/
+PApplet2 PApp2;
+PFrame2 frame2;
+
+/** Objetos e variaveis pertencentes á primeira janela*/
+Modelo3D modelo3D; //Modelo que gestiona os cenários sob um mesmo espaço 3D
 boolean modoPresentacao; //tem um modo de presentacao e um outro de edicao
 boolean verTelas; //Para visualizar os margens da imagem
 
@@ -29,9 +42,10 @@ public void init() {
 void setup () {
   size(int (( 1366 * 2 ) * .4 ), int ( 768 * .4), P3D);
   println("inicio setup() PApplet base");
-  frame.setLocation((int)(width*.25), 0 );
+  frame.setLocation((int)(width*.25), 0 ); //posicionamento da janela	
+	frame2 = new PFrame2(); //criação do frame que conterão o codigo PApplet2 da segunda janela
 
-  modelo3D = new Modelo3D(this, "PApp1");
+  modelo3D = new Modelo3D(this, "PApp1"); 
   
   rectMode(CENTER);
   textSize(50);
@@ -111,13 +125,50 @@ public PVector getAngulosCenario(String nome) {
 return modelo3D.getAngulosCenario(nome);
 }
 
-//===========================================================================================================================================
-// UDP | Metodos para receber os dados
-//===========================================================================================================================================
 /**
- * This is the program receive handler. To perform any action on datagram reception, you need to implement this method in your code. She will be 
- * automatically called by the UDP object each time he receive a nonnull message.
- */
+=====================================================================================================
+SEGUNDA JANELA PROJEÇÃO
+	O codigo para o desenho das projeções 3 e 4
+====================================================================================================
+*/
+/** Criação da clase que vai implementar o frame onde vai se desenhar o codigo do PApplet2 */
+public class PFrame2 extends Frame {
+	public PFrame2 ()  {
+		println("construtor da classe PFrame2");
+		setUndecorated(true);
+	  int alturaProjecao = int ( 768 * .4);
+  	setBounds(0,0,	int (( 1366 * 2 ) * .4 ), alturaProjecao );
+		setLocation( (int) (width*.25), alturaProjecao + 30); 
+		PApp2 = new PApplet2();
+    add (PApp2);
+		PApp2.init();
+		show();
+	}
+}
+/** Criação da classe que vai implementar o código necessario para desenhar as animaçóes*/
+public class PApplet2 extends PApplet {
+//	Modelo3D modelo3D; //Modelo que gestiona os cenários sob um mesmo espaço 3D
+	boolean modoPresentacao; //tem um modo de presentacao e um outro de edicao
+	boolean verTelas; //Para visualizar os margens da imagem
+
+	public void setup(){
+		size(int ( 1366 * 2 * .4) , int (768 * .4), OPENGL );
+		frameRate(30);
+ // 	size(int (( 1366 * 2 ) * .4 ), int ( 768 * .4), P3D);
+
+	}
+
+	public void draw () {
+
+	}	
+}
+/**
+===========================================================================================================================================
+ UDP | Metodos para receber os dados
+===========================================================================================================================================
+ This is the program receive handler. To perform any action on datagram reception, you need to implement this method in your code. She will be 
+ automatically called by the UDP object each time he receive a nonnull message.
+*/
 
 void receive( byte[] data ) {
   String dataEntrante = new String (data); 
@@ -131,7 +182,7 @@ void receive( byte[] data ) {
   posicao = movimentacao = deslocamento = 0;
   
   //MÉTODOS DE MODELOS  
-  /** String:  O nome do cenario a ligar */
+  /** String:  O nome do cenario a ligar.*/
   modelo3D.ligaCenario( nomeCenario);
   /** String:  O nome do cenario a desligar */
   modelo3D.desligaCenario( nomeCenario);
@@ -145,10 +196,10 @@ void receive( byte[] data ) {
   modelo3D.novosDadosFinais ( posicao, movimentacao, deslocamento);
 }
 		
-//===========================================================================================================================================
-// INTERACTION TEMPORAL | Por quanto não tiver conexção com o macmini, os testes de interação serão criados a continuação 
-//===========================================================================================================================================
-
+/**
+===========================================================================================================================================
+INTERACAO TEMPORAL | Por quanto não tiver conexção com o macmini, os testes de interação serão criados a continuação 
+==========================================================================================================================================*/
 public void keyPressed (){
 	float anguloMudanca = 0;
 	PVector mudancaPosicao = modelo3D.getAnglulosDePos();	
