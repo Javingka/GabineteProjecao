@@ -31,12 +31,12 @@ class Modelo3D {
     
     listaCenariosLigados = new ArrayList <String>();
     cenarios = new ArrayList <Cenario>();
-    cenarios.add( new Cenario01(p5, 5.02,0 , 0.02, radEsfera, "Revoada") );
+    cenarios.add( new Cenario01(p5, PI*.25, 0 , PI*.5, radEsfera, "Revoada") );
     cenarios.add( new Cenario02(p5, 0,  PI*1.5, PI*.5, radEsfera,  "Atraccao" ) );
     cenarios.add( new Cenario03(p5, PI*.25, 0,  0 , radEsfera, "Ser01") );
-    if (nomePai.equals("PApp1"))  cenarios.add( new Cenario04(p5, PI*1.98, PI*1.5,  PI*.5, radEsfera, "Nuvem", "WithControls") ); //so o papplet1 tem controles p5
-    else cenarios.add( new Cenario04(p5, PI*1.98, 0,  PI*.5, radEsfera, "Nuvem") );
-    cenarios.add( new Cenario05(p5, PI*.15, 0,  0 , radEsfera, "Rodape_0") );
+    if (nomePai.equals("PApp1"))  cenarios.add( new Cenario04(p5, 0, 0,  PI*.5, radEsfera, "Nuvem", "WithControls") ); //so o papplet1 tem controles p5
+    else cenarios.add( new Cenario04(p5, 0, 0,  PI*.5, radEsfera, "Nuvem") );
+    cenarios.add( new Cenario05(p5, 0, 0,  0 , radEsfera, "Rodape_0") );
     cenarios.add( new Cenario06(p5, 0, 0, 0, radEsfera, "Rodape_1"));
     
     desloqueX = desloqueY = desloqueZ = 0; //A posiçāo inicial.
@@ -259,7 +259,9 @@ class Modelo3D {
   }
   /** Novos dados para a posiçao da camara */
   public void novaPosicaoCamara(PVector angulosCamara){
-    
+    setAng_X_Camara(angulosCamara.x); 
+    setAng_Y_Camara(angulosCamara.y); 
+    setAng_Z_Camara(angulosCamara.z); 
   }
   /** para o recebimento de dados de interaçao, de maneira continua, */
   public void novosDadosContinuos (float posicao, float movimentacao, float deslocamento){

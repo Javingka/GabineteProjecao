@@ -1,10 +1,8 @@
-import codeanticode.glgraphics.*;
 import java.awt.Frame;
 import java.awt.event.KeyEvent;
 import java.text.*;
-import controlP5.*;  
+import controlP5.*; 
 import hypermedia.net.*; //UDP
-
 
 /**
 =====================================================================================================
@@ -40,10 +38,11 @@ public void init() {
 }
 
 void setup () {
-  size(int (( 1366 * 2 ) * .4 ), int ( 768 * .4), P3D);
+  size(int (( 1024 * 2 ) * .5), int ( 768 * .5 ) , P3D);
+ // size(int (( 1366 * 2 ) * .4 ), int ( 768 * .4), P3D);  
   println("inicio setup() PApplet base");
-  frame.setLocation((int)(width*.25), 0 ); //posicionamento da janela	
-	frame2 = new PFrame2(); //criação do frame que conterão o codigo PApplet2 da segunda janela
+  frame.setLocation(0, 0 ); //posicionamento da janela	
+  frame2 = new PFrame2(); //criação do frame que conterão o codigo PApplet2 da segunda janela
 
   modelo3D = new Modelo3D(this, "PApp1"); 
   
@@ -53,9 +52,10 @@ void setup () {
   
   verTelas = modoPresentacao = false;
   
-//  udp = new UDP( this, 6000, "127.0.0.1" );
-//  udp.listen( true ); //   wait constantly for incomming data
-  
+  udp = new UDP( this, 6000);
+  udp.listen( true ); //   wait constantly for incomming data
+  // udp.log( true ); // para debuuging
+
   println("fim setup() PApplet base");
 }
 
@@ -73,28 +73,6 @@ void draw () {
   }
 }
 
-/** metodo temporal para visualizar os cenarios */
-public void mousePressed(){
-  String nomeCenario = "Rodape_1";
-  PVector pos = modelo3D.getAngulosCenario(nomeCenario);
-  PVector cam = new PVector(0, 0, 0);
-  
-// É preciso fazer a resta de TWO_PI - valor angulo. tem relação com a definição dos angulos que definem a câmara na clase Modelo, 
-// mas não tenho clareza de porque cheguei nessa conclusão,  mas rola.
-	println("setAng_x_Puntero: " + pos + " x: " + (TWO_PI - pos.x) + " y: " + (TWO_PI - pos.y ) + " z: " + (TWO_PI - pos.z) );
-
-  modelo3D.setAng_X_Puntero( TWO_PI - pos.x );
-  modelo3D.setAng_Y_Puntero( TWO_PI - pos.y );
-  modelo3D.setAng_Z_Puntero( TWO_PI - pos.z );
-  modelo3D.setAng_X_Camara( cam.x );
-  modelo3D.setAng_Y_Camara( cam.y );
-  modelo3D.setAng_Z_Camara( cam.z );    
-//  modelo3D.setDistanciaFoco( 1 );
-  verTelas = false  ;
-  
-  modelo3D.ligaCenario(nomeCenario);
-}
-
 public void desenhaTela() {
   int w = width / 2;
   int h = height;
@@ -107,7 +85,7 @@ public void desenhaTela() {
   rect(width*.25f, h/2, w, h );
   rect(width*.75f, h/2, w, h );
   fill(0);
-  textSize(50);
+  textSize(150);
   text("1", width*.25f, h/2);
   text("2", width*.75f, h/2);
   popStyle();
@@ -133,35 +111,58 @@ SEGUNDA JANELA PROJEÇÃO
 */
 /** Criação da clase que vai implementar o frame onde vai se desenhar o codigo do PApplet2 */
 public class PFrame2 extends Frame {
-	public PFrame2 ()  {
-		println("construtor da classe PFrame2");
-		setUndecorated(true);
-	  int alturaProjecao = int ( 768 * .4);
-  	setBounds(0,0,	int (( 1366 * 2 ) * .4 ), alturaProjecao );
-		setLocation( (int) (width*.25), alturaProjecao + 30); 
-		PApp2 = new PApplet2();
+  public PFrame2 ()  {
+    println("construtor da classe PFrame2");
+    setUndecorated(true);
+    int alturaProjecao = int ( 768 * .5 );
+    setBounds(0,0,	int (( 1024 * 2 ) * .5 ), alturaProjecao );
+    setLocation( 0, alturaProjecao);  //setLocation( (int) (width), alturaProjecao); 
+    PApp2 = new PApplet2();
     add (PApp2);
-		PApp2.init();
-		show();
-	}
+    PApp2.init();
+    show();
+  }
 }
 /** Criação da classe que vai implementar o código necessario para desenhar as animaçóes*/
 public class PApplet2 extends PApplet {
-//	Modelo3D modelo3D; //Modelo que gestiona os cenários sob um mesmo espaço 3D
-	boolean modoPresentacao; //tem um modo de presentacao e um outro de edicao
-	boolean verTelas; //Para visualizar os margens da imagem
+  Modelo3D modelo3Db; //Modelo que gestiona os cenários sob um mesmo espaço 3D
+  boolean modoPresentacao; //tem um modo de presentacao e um outro de edicao
+  boolean verTelas; //Para visualizar os margens da imagem
 
-	public void setup(){
-		size(int ( 1366 * 2 * .4) , int (768 * .4), OPENGL );
-		frameRate(30);
- // 	size(int (( 1366 * 2 ) * .4 ), int ( 768 * .4), P3D);
-
-	}
-
-	public void draw () {
-
-	}	
+  public void setup(){
+  size(int (( 1024 * 2 ) * .5), int ( 768 * .5 ) , P3D);
+//size(int ( 1366 * 2 * .4) , int (768 * .4), P3D );
+   modelo3Db = new Modelo3D(this, "PApp2"); 
+  }
+  public void draw () {
+    background(0);
+    if (verTelas) {
+      camera();
+      desenhaTelab();
+      println("rolando ver telas PApp1");
+    } else {
+      modelo3Db.desenhaModelo(); //desenha a esfera e todo o que em ela estiver visível
+    }
+  }	
 }
+public void desenhaTelab() {
+  int w = width / 2;
+  int h = height;
+
+  pushStyle();
+  rectMode(CENTER);
+  stroke(255, 0, 0);
+  strokeWeight(3);
+  fill(255, 200);
+  rect(width*.25f, h/2, w, h );
+  rect(width*.75f, h/2, w, h );
+  fill(0);
+  textSize(150);
+  text("1", width*.25f, h/2);
+  text("2", width*.75f, h/2);
+  popStyle();
+}
+
 /**
 ===========================================================================================================================================
  UDP | Metodos para receber os dados
@@ -170,12 +171,11 @@ public class PApplet2 extends PApplet {
  automatically called by the UDP object each time he receive a nonnull message.
 */
 
-void receive( byte[] data ) {
+void receiveOld( byte[] data ) {
   String dataEntrante = new String (data); 
   
-  
   //VARIAVEIS
-  String nomeCenario = "";
+  String nomeCenario = "Revoada";
   PVector angulosPos = new PVector();
   PVector angulosCamara = new PVector();
   float posicao, movimentacao, deslocamento;
@@ -195,11 +195,116 @@ void receive( byte[] data ) {
   /** 3 floats: para o recebimento dos dados finais depois da interaçao com qualquer cenario interativo */
   modelo3D.novosDadosFinais ( posicao, movimentacao, deslocamento);
 }
+
+void receive( byte[] data ) {       // <-- default handler
+  //void receive( byte[] data, String otherip, int port ) {  // <-- extended handler
+
+  //data = subset(data, 0, data.length-2);
+  char[] tipoDadoIni = char(subset(data, 0, 1)); //peda o primeiro char
+  char tipoDado = tipoDadoIni[0]; //o char fica como char simples
+  char[] metodoDadoIni = char(subset(data, 1, 1)); //segundo char é o metodo para onde enviar os valores
+  char metodoDado = metodoDadoIni[0];
+  String message = new String( subset(data, 2, data.length-2) );
+  float[] listVals = float(split(message, ','));
+
+  switch(tipoDado) {
+  case 'c': //tipo cenario
+    //println("tipoDado: Dados Cenario");
+    switch(metodoDado) {
+    case 'n': //liga cenario
+      println("Metodo ligaCenario");
+      println(tipoDado);    
+      println(metodoDado);
+      println( "recebido: "+message);// print the result
+      modelo3D.ligaCenario( message );
+      break;
+    case 'f': //desliga cenario
+      println("Metodo desligaCenario");
+      println(tipoDado);    
+      println(metodoDado);
+      println( "recebido: "+message);// print the result
+      modelo3D.desligaCenario( message );
+      break;
+    }
+    break;
+  case 'd': //tipo dados continuos
+    println("tipoDado: Dados Continuos");
+    println(tipoDado);    
+    println(metodoDado);
+    //println( "recebido: "+message);// print the result
+    //println( "recebido: "+listVals);// print the result
+    println("valor posicao fruidor: "+ listVals[0]);
+    println("valor movimentacao: "+ listVals[1]);
+    println("valor deslocamento: "+ listVals[2]);
+    break;
+  case 'p': //tipo dados posicao cenario
+    println("tipoDado: Dados Posicao Cenario");
+    println(tipoDado);    
+    println(metodoDado);
+    
+    //println( "recebido: "+message);// print the result
+    //println( "recebido: "+listVals);// print the result
+    println("anguloXpuntero: "+ listVals[0]);
+    println("anguloYpuntero: "+ listVals[1]);
+    println("anguloZpuntero: "+ listVals[2]);
+    
+    PVector pos = new PVector(listVals[0], listVals[1], listVals[2]);
+    modelo3D.novaPosicaoPuntero(pos);
+    PApp2.modelo3Db.novaPosicaoPuntero(pos);
+    
+    println("anguloXcamera: "+ listVals[3]);
+    println("anguloYcamera: "+ listVals[4]);
+    println("anguloZcamera: "+ listVals[5]);
+    
+    PVector posC = new PVector(listVals[3], listVals[4], listVals[5]);
+    modelo3D.novaPosicaoCamara(posC);
+    PApp2.modelo3Db.novaPosicaoCamara(posC);
+    
+    println(posC);
+ //   println("distanciaFoco: "+ listVals[6]);
+    
+    println("verTelas: "+ listVals[7]); 
+    if( listVals[7] == 1.0 ) {
+      verTelas = true;
+      PApp2.verTelas = true;
+    } else {
+      verTelas = false;
+      PApp2.verTelas = false;
+    }
+     
+//    println("verTelas: "+ boolean(int(listVals[7])));
+    break;
+  case 'f'://tipo dados finais
+    println("tipoDado: Dados Finais");
+    break;
+  }
+}
 		
 /**
 ===========================================================================================================================================
 INTERACAO TEMPORAL | Por quanto não tiver conexção com o macmini, os testes de interação serão criados a continuação 
 ==========================================================================================================================================*/
+/** metodo temporal para visualizar os cenarios */
+public void mousePressed(){
+  String nomeCenario = "Rodape_0";
+  PVector pos = modelo3D.getAngulosCenario(nomeCenario);
+  PVector cam = new PVector(0, 0, 0);
+  
+// É preciso fazer a resta de TWO_PI - valor angulo. tem relação com a definição dos angulos que definem a câmara na clase Modelo, 
+// mas não tenho clareza de porque cheguei nessa conclusão,  mas rola.
+  println("setAng_x_Puntero: " + pos + " x: " + (TWO_PI - pos.x) + " y: " + (TWO_PI - pos.y ) + " z: " + (TWO_PI - pos.z) );
+
+  modelo3D.setAng_X_Puntero( TWO_PI - pos.x );
+  modelo3D.setAng_Y_Puntero( TWO_PI - pos.y );
+  modelo3D.setAng_Z_Puntero( TWO_PI - pos.z );
+  modelo3D.setAng_X_Camara( cam.x );
+  modelo3D.setAng_Y_Camara( cam.y );
+  modelo3D.setAng_Z_Camara( cam.z );    
+//  modelo3D.setDistanciaFoco( 1 );
+  verTelas = false  ;
+  
+  modelo3D.ligaCenario(nomeCenario);
+}
 public void keyPressed (){
 	float anguloMudanca = 0;
 	PVector mudancaPosicao = modelo3D.getAnglulosDePos();	
@@ -220,6 +325,9 @@ public void keyPressed (){
 		anguloMudanca = (mudancaPosicao.z + 0.005) % TWO_PI;//modificação do angulo e restrição para ficar em valores dentro de TWO_PI 
 		mudancaPosicao = new PVector(mudancaPosicao.x, mudancaPosicao.y, anguloMudanca);
 		break;
+        case 'v':
+                verTelas = !verTelas;
+                break;
   }
 //  println(mudancaPosicao);
   modelo3D.novaPosicaoPuntero(mudancaPosicao);
