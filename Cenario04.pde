@@ -186,23 +186,23 @@ class Cenario04 extends Cenario {
       float distanceToFocalPlane = focalPlane.getDistanceToPoint(position);
       distanceToFocalPlane *= 1 / dofRatio;
       distanceToFocalPlane = constrain(distanceToFocalPlane, 1, 15);
-      strokeWeight(distanceToFocalPlane);
-      stroke(255, constrain(255 / (distanceToFocalPlane * distanceToFocalPlane), 1, 255));
-      point(position.x, position.y, position.z);
+      p5.strokeWeight(distanceToFocalPlane);
+      p5.stroke(255, constrain(255 / (distanceToFocalPlane * distanceToFocalPlane), 1, 255));
+      p5.point(position.x, position.y, position.z);
     }
     void applyFlockingForce() {
       force.addSelf(
-      noise(
+      p5.noise(
       position.x / neighborhood + globalOffset.x + localOffset.x * independence, 
       position.y / neighborhood, 
       position.z / neighborhood)
         - .5, 
-      noise(
+      p5.noise(
       position.x / neighborhood, 
       position.y / neighborhood + globalOffset.y  + localOffset.y * independence, 
       position.z / neighborhood)
         - .5, 
-      noise(
+      p5.noise(
       position.x / neighborhood, 
       position.y / neighborhood, 
       position.z / neighborhood + globalOffset.z + localOffset.z * independence)
@@ -261,10 +261,7 @@ class Cenario04 extends Cenario {
     }
 
     public void draw() {
-      background(0);
 
-      pushMatrix();
-      popMatrix();
     }
     boolean temEvento() {
       if (event) {

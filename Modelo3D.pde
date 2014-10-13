@@ -34,8 +34,8 @@ class Modelo3D {
     cenarios.add( new Cenario01(p5, PI*.25, 0 , PI*.5, radEsfera, "Revoada") );
     cenarios.add( new Cenario02(p5, 0,  PI*1.5, PI*.5, radEsfera,  "Atraccao" ) );
     cenarios.add( new Cenario03(p5, PI*.25, 0,  0 , radEsfera, "Ser01") );
-    if (nomePai.equals("PApp1"))  cenarios.add( new Cenario04(p5, 0, 0,  PI*.5, radEsfera, "Nuvem", "WithControls") ); //so o papplet1 tem controles p5
-    else cenarios.add( new Cenario04(p5, 0, 0,  PI*.5, radEsfera, "Nuvem") );
+    if (nomePai.equals("PApp1"))  cenarios.add( new Cenario04(p5, PI*1.98, PI*1.5,  PI*.5, radEsfera, "Nuvem", "WithControls") ); //so o papplet1 tem controles p5
+    else cenarios.add( new Cenario04(p5,  PI*1.98, PI*1.5,  PI*.5, radEsfera, "Nuvem") );
     cenarios.add( new Cenario05(p5, 0, 0,  0 , radEsfera, "Rodape_0") );
     cenarios.add( new Cenario06(p5, 0, 0, 0, radEsfera, "Rodape_1"));
     
@@ -110,9 +110,9 @@ class Modelo3D {
 				//Filtro para agregar deslocamentos na posicao dos cenários 
         if (n.equals("Nuvem")) { //se esta na lista, evaluamos se o cenário é o "Nuvem", nesse caso é ligado com o seguinte método
           ligaCenario( c , new PVector (0, PI*.01f, 0) ); //se desenha o cenario com um offset pra fazer-lho visivel
-				} else if (n.equals("Rodape_1")) {
-					ligaCenario( c , new PVector (PI*.03,0 , 0));//-PI*.03
-				} else { //Se náo liga sem deslocamentos os cenários 
+	} else if (n.equals("Rodape_1")) {
+          ligaCenario( c , new PVector (PI*.03,0 , 0));//-PI*.03
+	} else { //Se náo liga sem deslocamentos os cenários 
           ligaCenario( c );  
         }
       }
@@ -142,16 +142,16 @@ class Modelo3D {
     p5.popMatrix();
   }
 
-	public void settingCamera() {
+  public void settingCamera() {
 //    println( "angulos posição puntero: " + angulosPosicaoPuntero.x + " " + angulosPosicaoPuntero.y + " " + angulosPosicaoPuntero.z );
 //    p5.pushMatrix();
 
-		matrixPuntero.reset();
-		matrixPuntero.rotateZ(angulosPosicaoPuntero.z);//bankModelo);
-		matrixPuntero.rotateX(angulosPosicaoPuntero.x);//pitchModelo); 
-		matrixPuntero.rotateY(angulosPosicaoPuntero.y);//headingModelo);
-		quaternionPuntero.set(matrixPuntero);
-		quaternionPuntero.mult(posRefPuntero, posQuaternionPuntero); //obtenemos a posicao do puntero no vector "posQuaternionPuntero"
+    matrixPuntero.reset();
+    matrixPuntero.rotateZ(angulosPosicaoPuntero.z);//bankModelo);
+    matrixPuntero.rotateX(angulosPosicaoPuntero.x);//pitchModelo); 
+    matrixPuntero.rotateY(angulosPosicaoPuntero.y);//headingModelo);
+    quaternionPuntero.set(matrixPuntero);
+    quaternionPuntero.mult(posRefPuntero, posQuaternionPuntero); //obtenemos a posicao do puntero no vector "posQuaternionPuntero"
  
 //		posQuaternionPuntero = cenarios.get(0).calculaPosCartesiana(posRefPuntero, angulosPosicaoPuntero.x,angulosPosicaoPuntero.y, angulosPosicaoPuntero.z);
 //		println("posQuaternionPuntero> " + posQuaternionPuntero);     
