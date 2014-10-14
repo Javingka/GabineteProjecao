@@ -5,6 +5,7 @@ class Cenario {
   public int radEsfera;
   public String nome;
   public float [] varFromKinect;
+  public float valModificadoraA, valModificadoraB, valModificadoraC;
   
   public Cenario(float angX, float angY, float angZ, int _radEsfera, String _nome){ 
     anguloPos_X = angX;
@@ -17,7 +18,7 @@ class Cenario {
     temporalRef = originalRef; //posiçāo temporal que na imagen é a cima da esfera que se movimenta
 //CALCULO DA POSIÇĀO DO CENARIO EM RELAÇĀO COM O VETOR DO EIXO 'Y' NO CENTRO DA ESFERA 
     posGlobal = calculaPosCartesiana( originalRef, anguloPos_X, anguloPos_Y, anguloPos_Z );
-    
+    valModificadoraA = valModificadoraB = valModificadoraC = .5;
   }   
   
   public PVector calculaPosCartesiana( PVector original , float ax, float ay, float az){
@@ -40,7 +41,15 @@ class Cenario {
     
     return new PVector( rZ0, rZ1, rZ2);
   }
-  
+  public void setValModificadoraA (float va) {
+    valModificadoraA = va;
+  }
+  public void setValModificadoraB (float vb) {
+    valModificadoraB = vb;
+  }
+  public void setValModificadoraC (float vc) {
+    valModificadoraC = vc;
+  }
   public void originalRef( PVector pos){
    originalRef = pos; //new PVector(0, -radEsfera, 0); 
   }
@@ -79,4 +88,13 @@ class Cenario {
      return cenarioM;
   }
   public void drawCenario(){}
+  public void ejecutaModificacoes(){}
+  public int aplicaModificacoesNoVal( float valMod, int limA, int limB) {
+    int val = (int) constrain ( map( valMod, 0, 1, limA, limB), limA, limB);
+    return val;
+  }
+  public float aplicaModificacoesNoVal( float valMod, float limA, float limB) {
+    float val =  constrain ( map( valMod, 0, 1, limA, limB), limA, limB);
+    return val;
+  }
 }

@@ -265,12 +265,33 @@ class Modelo3D {
   }
   /** para o recebimento de dados de interaçao, de maneira continua, */
   public void novosDadosContinuos (float posicao, float movimentacao, float deslocamento){
-    
+    for ( Cenario c : cenarios ){ //bucle por cada um dos cenarios declarados
+      String n = c.getNameCenario(); //pegamos o nome de cada cenário a evaluar
+      if (listaCenariosLigados.contains(n)) { //evaluamos se o cenário esta na lista de cenários ligados
+        c.setValModificadoraA( posicao );
+        c.setValModificadoraB( movimentacao );
+        c.setValModificadoraC( deslocamento );
+        
+        c.ejecutaModificacoes();
+      }
+    }    
   }
   /** para o recebimento dos dados finais depois da interaçao com qualquer cenario interativo */
   public void novosDadosFinais (float posicao, float movimentacao, float deslocamento){
     
   }
-  
+  /** para o recebimento de dados de interaçao, de maneira continua, desde GabinetePRojeção usando o mouse, poreso receve variaves como -1 */
+  public void novosDadosContinuosMouse (float posicao, float movimentacao, float deslocamento){
+    for ( Cenario c : cenarios ){ //bucle por cada um dos cenarios declarados
+      String n = c.getNameCenario(); //pegamos o nome de cada cenário a evaluar
+      if (listaCenariosLigados.contains(n)) { //evaluamos se o cenário esta na lista de cenários ligados
+        if (posicao != -1 ) c.setValModificadoraA( posicao );
+        if (movimentacao != -1 ) c.setValModificadoraB( movimentacao );
+        if (deslocamento != -1 ) c.setValModificadoraC( deslocamento );
+        
+        c.ejecutaModificacoes();
+      }
+    }    
+  }
 }
     

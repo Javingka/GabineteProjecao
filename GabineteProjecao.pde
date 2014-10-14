@@ -44,7 +44,7 @@ void setup () {
   frame.setLocation(0, 0 ); //posicionamento da janela	
   frame2 = new PFrame2(); //criação do frame que conterão o codigo PApplet2 da segunda janela
 
-  modelo3D = new Modelo3D(this, "PApp1"); 
+  modelo3D = new Modelo3D(this, "PApp1_sem_control"); 
   
   rectMode(CENTER);
   textSize(50);
@@ -257,11 +257,25 @@ INTERACAO TEMPORAL | Por quanto não tiver conexção com o macmini, os testes d
 ==========================================================================================================================================*/
 /** metodo temporal para visualizar os cenarios */
 public void mousePressed(){
-  String cenarioTeste = "Nuvem";
+  String cenarioTeste = "Revoada";
   montaModeloNaTela ( cenarioTeste, modelo3D, true);
   montaModeloNaTela ( cenarioTeste, PApp2.modelo3Db, true);
 }
 
+/** Função para testar as mudanças de dados desde mac-mini sem cam-mini */
+public void mouseDragged() {
+  float mod = map (mouseX, 0, width, 0, 1);
+  if ( key == 'a') {
+    modelo3D.novosDadosContinuosMouse(mod,-1,-1);
+    PApp2.modelo3Db.novosDadosContinuosMouse(mod,-1,-1);
+  } else if ( key == 's') {
+    modelo3D.novosDadosContinuosMouse(-1,mod,-1);
+    PApp2.modelo3Db.novosDadosContinuosMouse(-1,mod,-1);
+  } else if ( key == 'd') {
+    modelo3D.novosDadosContinuosMouse(-1,-1,mod);
+    PApp2.modelo3Db.novosDadosContinuosMouse(-1,-1,mod);
+  } 
+}
 public void montaModeloNaTela( String nomeC, Modelo3D m , boolean ladoCamara) {
   String nomeCenario = nomeC;
   PVector pos = m.getAngulosCenario(nomeCenario);
@@ -269,7 +283,7 @@ public void montaModeloNaTela( String nomeC, Modelo3D m , boolean ladoCamara) {
   
 // É preciso fazer a resta de TWO_PI - valor angulo. tem relação com a definição dos angulos que definem a câmara na clase Modelo, 
 // mas não tenho clareza de porque cheguei nessa conclusão,  mas rola.
-  println("setAng_x_Puntero: " + pos + " x: " + (TWO_PI - pos.x) + " y: " + (TWO_PI - pos.y ) + " z: " + (TWO_PI - pos.z) );
+//  println("setAng_x_Puntero: " + pos + " x: " + (TWO_PI - pos.x) + " y: " + (TWO_PI - pos.y ) + " z: " + (TWO_PI - pos.z) );
 
   m.setAng_X_Puntero( TWO_PI - pos.x );
   m.setAng_Y_Puntero( TWO_PI - pos.y );
