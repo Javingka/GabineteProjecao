@@ -1,4 +1,4 @@
-//import peasy.*;
+//"Nuvem"
 import toxi.geom.*;
 import java.util.*;
 class Cenario04 extends Cenario {
@@ -15,7 +15,7 @@ class Cenario04 extends Cenario {
   Plane focalPlane;
   float[] camPosition;
   //  PeasyCam cam;
-
+  float posicaoVariableZ;
   PFrame f;
   secondApplet s;
   boolean temControl;
@@ -47,17 +47,33 @@ class Cenario04 extends Cenario {
     f = new PFrame();
     temControl = true;
   }
- 
+  public void resetCenario(){
+    camPosition = new float[3];
+    camPosition[0] = 0;
+    camPosition[1] = 0;
+    camPosition[2] = width;
+    temControl = false;
+    /**--Variaveis especiais--*/
+    setParameters();
+    avg = new Vec3D();
+    globalOffset = new Vec3D(0, 1. / 3, 2. / 3);
+    cameraCenter = new Vec3D();
+    particles.clear();
+    //Criacao das particulas
+    for (int i = 0; i < n; i++)
+      particles.add(new Particle());
+  }
   void ejecutaModificacoes () { //implementação de classe declarada na classe pai 'Cenario' | E chamada desde Modelo3D cada vez que tem novos dados
      //Modificações com o dado A
      
      //Modificações com o dado B
-     speed = aplicaModificacoesNoVal( valModificadoraB, 0, 100);
+     posicaoVariableZ = aplicaModificacoesNoVal( valModificadoraC, -width*.3, width*.3);
+     speed = aplicaModificacoesNoVal( valModificadoraB, 0, 200);
      neighborhood = aplicaModificacoesNoVal( valModificadoraA, 1, 640);
 //     independence = aplicaModificacoesNoVal( valModificadoraA, 0.0, 1.0);
      //Modificações com o dado C
-     spread = aplicaModificacoesNoVal( valModificadoraC, 200, 50);
-     viscosity = aplicaModificacoesNoVal( valModificadoraC, 0.0, 1.0);
+//     spread = aplicaModificacoesNoVal( valModificadoraC, 200, 50);
+//     viscosity = aplicaModificacoesNoVal( valModificadoraC, 0.0, 1.0);
   }
   public void setPosicaoCamara(PVector pos) {
     camPosition[0] = pos.x;
@@ -94,8 +110,8 @@ class Cenario04 extends Cenario {
     cameraCenter.addSelf(avg.scale(cameraRate));
 
     p5.translate(-cameraCenter.x, -cameraCenter.y, -cameraCenter.z);
-    float tempPosX = map (valModificadoraA, 0, 1, -width*3, 0);
-    p5.translate(tempPosX, 0, 0);  
+    float tempPosX = map (valModificadoraA, 0, 1, -width*1, width*1);
+    p5.translate(tempPosX, 0,0 );  
     //  float[] camPosition = cam.getPosition();
     //  println("camPosition: " + camPosition[0] + " " +  camPosition[1] + " " + camPosition[2]);
     focalPlane = new Plane(avg, new Vec3D(camPosition[0], camPosition[1], camPosition[2]));
@@ -132,7 +148,7 @@ class Cenario04 extends Cenario {
   //import controlP5.*;
   public ControlP5 control;
   void setParameters() {
-    n = 10000;
+    n = 20000;
     dofRatio = 50;
     neighborhood = 10 ;
     speed = 24;

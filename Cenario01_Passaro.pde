@@ -11,9 +11,9 @@ class Cenario01_Passaro {
   float ypos;
   float zpos;
 
-  float _xpos;
-  float _ypos;
-  float _zpos;
+//  float _xpos;
+//  float _ypos;
+//  float _zpos;
 
   float xspeed;
   float yspeed;
@@ -63,7 +63,11 @@ class Cenario01_Passaro {
     posQuaternionPassaro = new PVector();
     formacaoPassaros = 0;
   }
-
+  void setNovaPos (float _xpos, float _ypos, float _zpos){
+    xpos = _xpos;
+    ypos = _ypos;
+    zpos = _zpos;
+  }
   // functionalities
   void run(float variacao) {
     update(variacao);
@@ -86,7 +90,7 @@ class Cenario01_Passaro {
       ypos += yspeed;
       zpos += zspeed;
 
-      diametroTunelPassaros = height * variacao;
+      diametroTunelPassaros = height * 4 * variacao;
       //definem o diametro da figura circular dos passaros
       float targetX = sin (id_par + frameCount * .01) * diametroTunelPassaros;
       float targetY = cos (id_par + frameCount * .01) * diametroTunelPassaros;
@@ -120,15 +124,19 @@ class Cenario01_Passaro {
   float angle = frameCount/m_wingspeed;  //keep the point so it forces float mode!
   //wingtip points
   //wfran= random(2);
-  x=  map(sin(angle), -1, 1, 113, 202);
+/*  x=  map(sin(angle), -1, 1, 113, 202);
   x2 = map (sin(angle), -1, 1, -113, -202);
-  y=  map(sin(angle), -1, 1, 71, 125);
-
+  y=  map(sin(angle), -1, 1, 71, 125);*/
+  x=  map(sin(angle), -1, 1, 80, 242);
+  x2 = map (sin(angle), -1, 1, -80, -242);
+  y=  map(sin(angle), -1, 1, 31, 85);
+  
   //modifiers of the constructed logo
   //  ang.x = atan2(py-ypos, px-xpos);
   ang.x = 0;//atan2(velocidade.y, velocidade.z);
   ang.y= 0;//atan2(velocidade.z, velocidade.x);
   ang.z = atan2(velocidade.y, velocidade.x);
+
 
   px = xpos;
   py = ypos;
@@ -172,34 +180,83 @@ void display() {
   //shape(logo, 0, 0, dia, dia);
 
   //properties of the wings
-  p5.fill(255);//51, 51, 51);
-  p5.noStroke();
+  p5.fill(255,200);//#FFFF00);//51, 51, 51);
+//  p5.noStroke();
+  p5.strokeWeight(5);
+  p5.stroke(255);//#FFFF00);
+  bor3(); //bor1();
 
-  //wing right
+  p5.popMatrix();
+}
+public void bor5(){
+ //wing right
   p5.beginShape();
-  p5.vertex(63, -1);
-  p5.vertex(162, -59);
-  p5.vertex(x, y);
-  p5.vertex(25, 177);
-  p5.vertex(25, 75);
+  p5.vertex(5, -75);
+  p5.vertex(x*1.5, -y*8);
+  p5.vertex(x, -50);
+  p5.vertex(5,-75);
+  p5.vertex(5, 320);
+  p5.vertex(x*2.5,y*2);
+  p5.vertex(x, -y);
   p5.endShape();
 
   //wing left
   p5.beginShape();
-  p5.vertex(-63, -1);
-  p5.vertex(-162, -59);
-  p5.vertex(x2, y);
-  p5.vertex(-25, 177);
-  p5.vertex(-25, 75);
+  p5.vertex(-5, -75);
+  p5.vertex(x2*1.5, -y*8);
+  p5.vertex(x2, -50);
+  p5.vertex(5, -75);
+  p5.vertex(-5, 320);
+  p5.vertex(x2*2.5, y*2);
+  p5.vertex(x2, -y);
+  p5.endShape(); 
+}
+public void bor4(){
+ //wing right
+  p5.beginShape();
+  p5.vertex(5, -75);
+  p5.bezierVertex(5, 320, x*2.5,y*2, x, -y);
+  p5.bezierVertex(x*1.5, -y*4,  150, -300, 5, -75);
   p5.endShape();
 
-  p5.popMatrix();
+  //wing left
+  p5.beginShape();
+  p5.vertex(-5, -75);
+  p5.bezierVertex(-5, 320, x2*2.5,y*2, x2, -y);
+  p5.bezierVertex(x2*1.5, -y*4,  -150, -300, -5, -75);
+  p5.endShape(); 
 }
+public void bor3() { //+forma sem curvas
 
-public void changeTarget() {
+  p5.quad(63, -1, 162, -159, x, y, 25, 277);
+
+  p5.quad(-63, -1, -162, -159 , x2, y, -25, 277);
+}
+public void bor1() { //basica
+   //wing right
+  p5.beginShape();
+  p5.vertex(63, -1);
+  p5.vertex(162, -159);//(162, -59);
+  p5.vertex(x, y);
+  p5.vertex(25, 277);//(25, 177);
+  p5.vertex(25, 75);
+//  p5.endShape();
+
+  //wing left
+//  p5.beginShape();
+  p5.vertex(-63, -1);
+  p5.vertex(-162, -159);//(-162, -59);
+  p5.vertex(x2, y);
+  p5.vertex(-25, 277);//(-25, 177);
+  p5.vertex(-25, 75);
+  p5.endShape(); 
+}
+public void mudaTarget() {
   ptarget = !ptarget;
 }
-
+public void MudaFormacao(int f) {
+  formacaoPassaros = f;
+}
 void bounce() {
   if (xpos < 5 || xpos > width-5) {
     xspeed = xspeed*-1;

@@ -1,3 +1,4 @@
+//"Toroide"
 class Cenario03 extends Cenario {
   PVector posIni;
   PApplet p5;
@@ -19,7 +20,7 @@ class Cenario03 extends Cenario {
   public void drawCenario(){
     p5.pushMatrix();
     p5.pushStyle();
-    p5.translate(posIni.x + posicaoVariavel , posIni.y, posIni.z);
+    p5.translate(posIni.x , posIni.y, posIni.z + posicaoVariavel );
     p5.fill(0,255,0);
     for (Cenario03_Ser01 s : seres) {
       s.desenhaSer();
@@ -29,9 +30,10 @@ class Cenario03 extends Cenario {
   }
    void ejecutaModificacoes () { //implementação de classe declarada na classe pai 'Cenario' | E chamada desde Modelo3D cada vez que tem novos dados
 
-     int val1 = aplicaModificacoesNoVal( valModificadoraB, 12, 40);
+     posicaoVariavel = aplicaModificacoesNoVal( valModificadoraC, -width, width);
+     float val1 = aplicaModificacoesNoVal( valModificadoraC, 40.0, 120.0);
      float val2 = aplicaModificacoesNoVal( valModificadoraA, 0.0, 1.0);
-     float val3 = aplicaModificacoesNoVal( valModificadoraC, 1.0, 20.0);
+     float val3 = aplicaModificacoesNoVal( valModificadoraB, 30.0, 40.0); //z:20
      for (Cenario03_Ser01 s : seres) {
         s.updateValores(val1, val2, val3);
      }

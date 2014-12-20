@@ -3,7 +3,6 @@ import java.awt.event.KeyEvent;
 import java.text.*;
 import controlP5.*; 
 import hypermedia.net.*; //UDP
-import geomerative.*;
 
 /**
 =====================================================================================================
@@ -24,11 +23,6 @@ Modelo3D modelo3D; //Modelo que gestiona os cenários sob um mesmo espaço 3D
 boolean modoPresentacao; //tem um modo de presentacao e um outro de edicao
 boolean verTelas; //Para visualizar os margens da imagem. É evaluada pelos  PApp1 e PApp2
 
-/** Variavel só de teste*/
-String [] listaNomeCenarios = {"Revoada", "Ser01", "Nuvem", "Rodape_1", "Rodape_0"};
-int indexCenariosTeste = 0;
-String nomeCenarioTeste;
-
 public void init() {
   println("frame: processing e PApplet: processing / primeira janela de projecao. frame e PApplet por default");
   // to make a frame not displayable, you can
@@ -44,8 +38,8 @@ public void init() {
 }
 
 void setup () {
-//  size(int (( 1024 * 2 )), int ( 768  ) , P3D);
-  size(int (1440 ), int ( 540), P3D);  
+  size(int (( 1024 * 2 ) * .5), int ( 768 * .5 ) , P3D);
+ // size(int (( 1366 * 2 ) * .4 ), int ( 768 * .4), P3D);  
   println("inicio setup() PApplet base");
   frame.setLocation(0, 0 ); //posicionamento da janela	
   frame2 = new PFrame2(); //criação do frame que conterão o codigo PApplet2 da segunda janela
@@ -119,18 +113,9 @@ public class PFrame2 extends Frame {
   public PFrame2 ()  {
     println("construtor da classe PFrame2");
     setUndecorated(true);
-    
-/*  PARA SIZE EM 4 TELAS
-    int alturaProjecao = 768; 
-    setBounds(0,0,  int (( 1024 * 2 )   ), alturaProjecao );
-    setLocation( width, 0);  
-*/
-    
-/*  */
-    int alturaProjecao = 540; //size em uma tela só
-    setBounds(0,0,  1440 , alturaProjecao );
-    setLocation(0, alturaProjecao + 10); 
-    
+    int alturaProjecao = int ( 768 * .5 );
+    setBounds(0,0,	int (( 1024 * 2 ) * .5 ), alturaProjecao );
+    setLocation( 0, alturaProjecao);  //setLocation( (int) (width), alturaProjecao); 
     PApp2 = new PApplet2();
     add (PApp2);
     PApp2.init();
@@ -143,8 +128,8 @@ public class PApplet2 extends PApplet {
   boolean modoPresentacao; //tem um modo de presentacao e um outro de edicao
 
   public void setup(){
-//    size(int (( 1024 * 2 ) ), int ( 768 ) , P3D); //size em 4 telas
-    size(1440, 540, P3D);   //size em uma tela só
+    size(int (( 1024 * 2 ) * .5), int ( 768 * .5 ) , P3D);
+  //size(int ( 1366 * 2 * .4) , int (768 * .4), P3D );
     modelo3Db = new Modelo3D(this, "PApp2"); 
   }
   public void draw () {
@@ -205,15 +190,13 @@ void receive( byte[] data ) {       // <-- default handler
       println(metodoDado);
       println( "recebido: "+message);// print the result
       modelo3D.ligaCenario( message );
-      PApp2.modelo3Db.ligaCenario( message );
       break;
     case 'f': //desliga cenario
       println("Metodo desligaCenario");
       println(tipoDado);    
       println(metodoDado);
       println( "recebido: "+message);// print the result
-      modelo3D.desligaCenario( message , 100);
-      PApp2.modelo3Db.desligaCenario( message , 100);
+      modelo3D.desligaCenario( message );
       break;
     }
     break;
@@ -226,10 +209,6 @@ void receive( byte[] data ) {       // <-- default handler
     println("valor posicao fruidor: "+ listVals[0]);
     println("valor movimentacao: "+ listVals[1]);
     println("valor deslocamento: "+ listVals[2]);
-    
-    modelo3D.novosDadosContinuosMouse(listVals[0], -1 ,-1);
-    PApp2.modelo3Db.novosDadosContinuosMouse(listVals[0], -1,-1);
-    
     break;
   case 'p': //tipo dados posicao cenario
     println("tipoDado: Dados Posicao Cenario");
@@ -244,7 +223,7 @@ void receive( byte[] data ) {       // <-- default handler
     
     PVector pos = new PVector(listVals[0], listVals[1], listVals[2]);
     modelo3D.novaPosicaoPuntero(pos);
-    PApp2.modelo3Db.novaPosicaoPuntero(pos);
+ //   PApp2.modelo3Db.novaPosicaoPuntero(pos);
     
     println("anguloXcamera: "+ listVals[3]);
     println("anguloYcamera: "+ listVals[4]);
@@ -252,7 +231,7 @@ void receive( byte[] data ) {       // <-- default handler
     
     PVector posC = new PVector(listVals[3], listVals[4], listVals[5]);
     modelo3D.novaPosicaoCamara(posC);
-    PApp2.modelo3Db.novaPosicaoCamara(posC);
+//    PApp2.modelo3Db.novaPosicaoCamara(posC);
     
     println(posC);
  //   println("distanciaFoco: "+ listVals[6]);
@@ -278,26 +257,9 @@ INTERACAO TEMPORAL | Por quanto não tiver conexção com o macmini, os testes d
 ==========================================================================================================================================*/
 /** metodo temporal para visualizar os cenarios */
 public void mousePressed(){
-  
-  if ( key == 't') { 
-    if (nomeCenarioTeste != null) {
-      modelo3D.desligaCenario(nomeCenarioTeste, 100);
-      PApp2.modelo3Db.desligaCenario(nomeCenarioTeste, 100);
-    }
-    nomeCenarioTeste = listaNomeCenarios[indexCenariosTeste];
-   /* 
-    String infoDado = "cn"; //indica que se trata de cenario (c) off (f)
-    String nome = infoDado + nomeCenario;
-    byte[] data = nome.getBytes();
-    
-    receive(data);*/
-    montaModeloNaTela ( nomeCenarioTeste, modelo3D, true);
-    montaModeloNaTela ( nomeCenarioTeste, PApp2.modelo3Db, true);
-    
-    indexCenariosTeste++;
-    indexCenariosTeste = indexCenariosTeste % listaNomeCenarios.length;
-  }
- 
+  String cenarioTeste = "Revoada";
+  montaModeloNaTela ( cenarioTeste, modelo3D, true);
+  montaModeloNaTela ( cenarioTeste, PApp2.modelo3Db, true);
 }
 
 /** Função para testar as mudanças de dados desde mac-mini sem cam-mini */
@@ -359,10 +321,6 @@ public void keyPressed (){
 		break;
         case 'v':
                 verTelas = !verTelas;
-                break;
-        case 'i':
-                indexCenariosTeste++;
-                indexCenariosTeste = indexCenariosTeste % listaNomeCenarios.length;
                 break;
   }
 //  println(mudancaPosicao);
